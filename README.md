@@ -1,37 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PurrfectHub
 
-## Getting Started
+![PurrfectHub Banner](/images/hero-cat.png)
 
-First, run the development server:
+## 📋 Overview
+
+**PurrfectHub** is a modern, feature-rich platform designed to connect cat lovers with their future feline companions. Built with the latest web technologies, it offers a seamless and engaging experience for browsing adoptable cats, managing adoption applications, and fostering a community of pet enthusiasts.
+
+## ✨ Features
+
+- **Cat Listings**: Browse a wide variety of cats available for adoption with detailed profiles.
+- **Advanced Search**: Filter cats by breed, age, color, and more to find your perfect match.
+- **User Accounts**: Secure authentication and profile management for adopters and shelters.
+- **Responsive Design**: Optimized for all devices, from desktops to mobile phones.
+- **Modern UI/UX**: A clean, intuitive interface built with Shadcn UI and Tailwind CSS.
+- **Dark Mode**: Fully supported dark mode for comfortable viewing in any lighting.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Components**: [Shadcn UI](https://ui.shadcn.com/)
+- **Icons**: [Lucide React](https://lucide.dev/) & [React Icons](https://react-icons.github.io/react-icons/)
+- **Forms**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
+- **State Management**: React Hooks & Context API
+- **Utilities**: [clsx](https://github.com/lukeed/clsx) & [tailwind-merge](https://github.com/dcastil/tailwind-merge)
+
+## 🚀 Getting Started
+
+Follow these steps to set up the project locally on your machine.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (Version 18 or later)
+- [npm](https://www.npmjs.com/), [yarn](https://yarnpkg.com/), or [pnpm](https://pnpm.io/)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Emtiaz-ahmed-13/purrfecthub_client.git
+   cd purrfecthub_client
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
+
+3. **Run the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
+
+4. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000) to see the application running.
+
+## 📂 Project Structure
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+src/
+├── app/              # Next.js App Router pages and layouts
+├── components/       # Reusable UI components
+│   ├── auth/         # Authentication related components
+│   ├── home/         # Homepage specific components
+│   ├── layout/       # Global layout components (Navbar, Footer)
+│   └── ui/           # Shadcn UI primitives
+├── lib/              # Utility functions and configuration
+└── models/           # TypeScript interfaces and types
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🤝 Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## Learn More
+## 📄 License
 
-To learn more about Next.js, take a look at the following resources:
+This project is open source and available under the information in the repository.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# purrfecthub_client
+Built with ❤️ by [Emtiaz Ahmed](https://github.com/Emtiaz-ahmed-13)
