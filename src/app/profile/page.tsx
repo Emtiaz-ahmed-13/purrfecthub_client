@@ -10,20 +10,21 @@ import * as z from "zod";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { API_BASE_URL } from "@/lib/config";
 import { User } from "@/models/types";
+import Link from "next/link";
 
 const profileSchema = z.object({
   name: z.string().min(2, {
@@ -93,8 +94,8 @@ export default function ProfilePage() {
 
         setUser(userObj);
         form.reset({
-          name: userObj.name,
-          email: userObj.email,
+          name: userObj.name || "",
+          email: userObj.email || "",
         });
       } catch (error) {
         console.error(error);
@@ -111,13 +112,18 @@ export default function ProfilePage() {
     setSaving(true);
     try {
       const token = localStorage.getItem("accessToken");
+      const payload: any = { ...values };
+      if (user && values.email === user.email) {
+        delete payload.email;
+      }
+
       const response = await fetch(`${API_BASE_URL}/users/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
            Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -174,6 +180,13 @@ export default function ProfilePage() {
                   {user?.id}
                </div>
             </CardContent>
+            <CardFooter>
+                <Link href={user?.role === 'SHELTER' ? "/dashboard/shelter" : "/dashboard/adopter"} className="w-full">
+                    <Button className="w-full" variant="outline">
+                        Go to Dashboard
+                    </Button>
+                </Link>
+            </CardFooter>
           </Card>
 
           <Card>

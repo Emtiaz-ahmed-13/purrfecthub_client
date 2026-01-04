@@ -11,14 +11,15 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/auth-context";
 import { API_BASE_URL } from "@/lib/config";
 import { FaGoogle } from "react-icons/fa";
 
@@ -40,6 +41,7 @@ export default function LoginPage() {
     },
   });
 
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -68,12 +70,10 @@ export default function LoginPage() {
          throw new Error("Login successful but no access token received.");
       }
 
-      localStorage.setItem("accessToken", accessToken);
-      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-
+      login(accessToken, refreshToken);
       toast.success("Logged in successfully!");
-
-      router.push("/");
+      
+      // Router push is handled in AuthContext based on role
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
     } finally {
