@@ -90,6 +90,11 @@ export function CatList({ shouldRefresh, onEdit }: { shouldRefresh: boolean; onE
                                 src={cat.imageUrl}
                                 alt={cat.name}
                                 className="object-cover w-full h-full"
+                                onError={(e) => {
+                                    // Fallback if image fails to load
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center h-full text-muted-foreground">No Image</div>';
+                                }}
                             />
                         ) : (
                             <div className="flex items-center justify-center h-full text-muted-foreground">

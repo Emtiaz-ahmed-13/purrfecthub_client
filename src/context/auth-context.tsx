@@ -1,17 +1,12 @@
 "use client";
 
-import { UserRole, UserStatus } from "@/models/types";
+import { User as BaseUser, UserRole } from "@/models/types";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  status: UserStatus;
+interface User extends BaseUser {
   exp?: number;
 }
 
@@ -35,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (token) {
       try {
         const decoded = jwtDecode<User>(token);
-        
+
         // Check if token is expired
         const currentTime = Date.now() / 1000;
         if (decoded.exp && decoded.exp < currentTime) {
@@ -56,11 +51,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (refreshToken) {
       localStorage.setItem("refreshToken", refreshToken);
     }
-    
+
     try {
       const decoded = jwtDecode<User>(token);
       setUser(decoded);
-      
+
       // Redirect based on role
       switch (decoded.role) {
         case UserRole.ADMIN:

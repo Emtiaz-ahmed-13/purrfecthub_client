@@ -44,9 +44,9 @@ function CheckoutForm({ clientSecret, onSuccess, onCancel }: { clientSecret: str
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: `${window.location.origin}/dashboard/adopter?payment_status=success`, 
+                return_url: `${window.location.origin}/dashboard/adopter?payment_status=success`,
             },
-            redirect: "if_required", 
+            redirect: "if_required",
         });
 
         if (error) {
@@ -62,8 +62,8 @@ function CheckoutForm({ clientSecret, onSuccess, onCancel }: { clientSecret: str
             }
             setIsLoading(false);
         } else {
-             setMessage("Payment status: " + paymentIntent.status);
-             setIsLoading(false);
+            setMessage("Payment status: " + paymentIntent.status);
+            setIsLoading(false);
         }
     };
 
@@ -71,7 +71,7 @@ function CheckoutForm({ clientSecret, onSuccess, onCancel }: { clientSecret: str
         <form onSubmit={handleSubmit} className="space-y-4">
             <PaymentElement />
             {message && <div className="text-red-500 text-sm">{message}</div>}
-             <div className="flex justify-end gap-2 pt-4">
+            <div className="flex justify-end gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
                     Cancel
                 </Button>
@@ -89,9 +89,9 @@ export function DonationModal({ catId, shelterId, catName, shelterName, trigger 
     const [isOpen, setIsOpen] = useState(false);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [sessionId, setSessionId] = useState<string | null>(null); 
+    const [sessionId, setSessionId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    
+
     // Stripe instance
     // Note: useStripe() only works inside Elements provider, which wraps the modal content conditionally below
     // So we invoke stripe promise manually for redirect flow initialization
@@ -104,26 +104,33 @@ export function DonationModal({ catId, shelterId, catName, shelterName, trigger 
                 catId,
                 shelterId
             });
-            
-            // If API returns sessionId, use Checkout flow
-            if (result.sessionId) {
-                 const stripeInstance = await stripePromise;
-                 if (stripeInstance) {
-                     const { error } = await (stripeInstance as any).redirectToCheckout({
-                         sessionId: result.sessionId
-                     });
-                     if (error) toast.error(error.message);
-                 }
-                 setIsOpen(false); 
-                 return;
+
+            // 1. If API returns paymentUrl, redirect directly
+            if (result.paymentUrl) {
+                window.location.href = result.paymentUrl;
+                return;
             }
 
-            // Fallback to Elements if clientSecret provided
+            // 2. If API returns sessionId, use Checkout flow
+            const sId = result.sessionId || result.donation?.stripeSessionId;
+            if (sId) {
+                const stripeInstance = await stripePromise;
+                if (stripeInstance) {
+                    const { error } = await (stripeInstance as any).redirectToCheckout({
+                        sessionId: sId
+                    });
+                    if (error) toast.error(error.message);
+                }
+                setIsOpen(false);
+                return;
+            }
+
+            // 3. Fallback to Elements if clientSecret provided
             if (result.clientSecret) {
                 setClientSecret(result.clientSecret);
             }
         } catch (error: any) {
-             toast.error(error.message || "Failed to initialize donation");
+            toast.error(error.message || "Failed to initialize donation");
         } finally {
             setIsLoading(false);
         }
@@ -185,11 +192,11 @@ export function DonationModal({ catId, shelterId, catName, shelterName, trigger 
                     </div>
                 ) : (
                     <Elements stripe={stripePromise} options={{ clientSecret }}>
-                        <CheckoutForm 
-                            clientSecret={clientSecret} 
+                        <CheckoutForm
+                            clientSecret={clientSecret}
                             onSuccess={() => {
                                 setIsOpen(false);
-                            }} 
+                            }}
                             onCancel={() => setClientSecret(null)}
                         />
                     </Elements>

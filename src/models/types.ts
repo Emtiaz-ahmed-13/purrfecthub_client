@@ -5,7 +5,8 @@ export interface Cat {
     age: number;
     gender: 'Male' | 'Female' | 'MALE' | 'FEMALE';
     location: string;
-    imageUrl: string;
+    imageUrl?: string;
+    images?: string[];
     status: 'Available' | 'Adopted' | 'Pending' | 'AVAILABLE' | 'ADOPTED' | 'PENDING' | 'NOT_AVAILABLE';
     color?: string;
     weight?: number;
@@ -13,6 +14,12 @@ export interface Cat {
     isVaccinated?: boolean;
     isNeutered?: boolean;
     specialNeeds?: string;
+    shelter?: {
+        id: string;
+        name: string;
+        city: string;
+        isVerified?: boolean;
+    };
 }
 
 export interface Shelter {
@@ -43,6 +50,11 @@ export interface User {
     phone?: string;
     address?: string;
     avatar?: string;
+    homeType?: string;
+    hasOtherPets?: boolean;
+    otherPetsInfo?: string;
+    experience?: string;
+    aboutMe?: string;
 }
 
 export interface FeatureIcon {

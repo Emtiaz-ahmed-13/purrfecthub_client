@@ -7,6 +7,7 @@ import { Heart, Info, MapPin, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { FaCat } from "react-icons/fa";
 
 const featuredCats: Cat[] = [
   {
@@ -101,23 +102,29 @@ export function FeaturedCats() {
         {/* Cats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {featuredCats.map((cat, index) => (
-            <div 
-              key={cat.id} 
+            <div
+              key={cat.id}
               className="group relative bg-card rounded-3xl overflow-hidden border border-border shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col hover:-translate-y-2 animate-in fade-in zoom-in"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {/* Image Container */}
               <div className="relative aspect-square overflow-hidden bg-muted">
-                <Image
-                  src={cat.imageUrl}
-                  alt={cat.name}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                
+                {cat.imageUrl ? (
+                  <Image
+                    src={cat.imageUrl}
+                    alt={cat.name}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground/20 bg-muted/50">
+                    <FaCat className="w-16 h-16" />
+                  </div>
+                )}
+
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
+
                 {/* Status Badge */}
                 <Badge className="absolute top-3 right-3 bg-primary/90 backdrop-blur-sm text-primary-foreground border-0 shadow-lg">
                   Available
@@ -128,12 +135,11 @@ export function FeaturedCats() {
                   onClick={() => toggleFavorite(cat.id)}
                   className="absolute top-3 left-3 h-10 w-10 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-transform duration-300 shadow-lg"
                 >
-                  <Heart 
-                    className={`h-5 w-5 transition-colors ${
-                      favorites.has(cat.id) 
-                        ? "fill-pink-500 text-pink-500" 
+                  <Heart
+                    className={`h-5 w-5 transition-colors ${favorites.has(cat.id)
+                        ? "fill-pink-500 text-pink-500"
                         : "text-muted-foreground"
-                    }`} 
+                      }`}
                   />
                 </button>
               </div>
@@ -151,7 +157,7 @@ export function FeaturedCats() {
                     {cat.age} {cat.age === 1 ? 'yr' : 'yrs'}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center text-sm text-muted-foreground mb-6">
                   <MapPin className="h-4 w-4 mr-1.5 text-primary" />
                   <span>{cat.location}</span>
@@ -169,10 +175,10 @@ export function FeaturedCats() {
             </div>
           ))}
         </div>
-        
+
         {/* Mobile View All Button */}
         <div className="mt-12 text-center lg:hidden">
-           <Link href="/cats">
+          <Link href="/cats">
             <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full border-2">
               View All Cats
             </Button>

@@ -35,5 +35,41 @@ export const AdoptionService = {
         }
 
         return response.json();
+    },
+
+    // Shelter methods
+    async getShelterApplications() {
+        const token = localStorage.getItem("accessToken");
+        const response = await fetch(`${API_BASE_URL}/adoptions/shelter/applications`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to fetch shelter applications");
+        }
+
+        return response.json();
+    },
+
+    async updateApplicationStatus(applicationId: string, status: 'APPROVED' | 'REJECTED', reviewNotes?: string) {
+        const token = localStorage.getItem("accessToken");
+        const response = await fetch(`${API_BASE_URL}/adoptions/${applicationId}/status`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status, reviewNotes }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to update application status");
+        }
+
+        return response.json();
     }
 };

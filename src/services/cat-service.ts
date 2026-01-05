@@ -1,6 +1,21 @@
 import { API_BASE_URL } from "@/lib/config";
 import { Cat } from "@/models/types";
 
+// Helper to transform backend cat response to frontend Cat type
+const transformCatResponse = (backendCat: any): Cat => {
+    // Ensure we have images array
+    const images = backendCat.images || [];
+
+    return {
+        ...backendCat,
+        images: images,
+        // Set imageUrl as first image for backward compatibility
+        imageUrl: images[0] || undefined,
+        // Set location from shelter city if available
+        location: backendCat.shelter?.city || backendCat.location || 'Unknown',
+    };
+};
+
 export interface CreateCatData {
     name: string;
     breed: string;
@@ -23,7 +38,6 @@ export const CatService = {
         images.forEach((image) => {
             formData.append("images", image);
         });
-
         const response = await fetch(`${API_BASE_URL}/cats`, {
             method: "POST",
             headers: {
@@ -37,7 +51,11 @@ export const CatService = {
             throw new Error(error.message || "Failed to create cat");
         }
 
-        return response.json();
+        const responseData = await response.json();
+        return {
+            ...responseData,
+            data: responseData.data ? transformCatResponse(responseData.data) : responseData.data
+        };
     },
 
     async updateCat(id: string, data: Partial<Cat>) {
@@ -56,7 +74,11 @@ export const CatService = {
             throw new Error(error.message || "Failed to update cat");
         }
 
-        return response.json();
+        const responseData = await response.json();
+        return {
+            ...responseData,
+            data: responseData.data ? transformCatResponse(responseData.data) : responseData.data
+        };
     },
 
     async deleteCat(id: string) {
@@ -89,7 +111,14 @@ export const CatService = {
             throw new Error(error.message || "Failed to fetch my cats");
         }
 
-        return response.json();
+        const responseData = await response.json();
+        return {
+            ...responseData,
+            data: {
+                ...responseData.data,
+                cats: responseData.data?.cats?.map(transformCatResponse) || []
+            }
+        };
     },
 
     async getCat(id: string) {
@@ -98,7 +127,11 @@ export const CatService = {
             const error = await response.json();
             throw new Error(error.message || "Failed to fetch cat");
         }
-        return response.json();
+        const responseData = await response.json();
+        return {
+            ...responseData,
+            data: responseData.data ? transformCatResponse(responseData.data) : responseData.data
+        };
     },
 
     async getCats(filters: any = {}) {
@@ -108,6 +141,16 @@ export const CatService = {
             const error = await response.json();
             throw new Error(error.message || "Failed to fetch cats");
         }
-        return response.json();
+        const responseData = await response.json();
+
+
+        const catsData = responseData.data || [];
+
+        const transformedCats = Array.isArray(catsData) ? catsData.map(transformCatResponse) : [];
+
+        return {
+            ...responseData,
+            data: transformedCats
+        };
     },
 };

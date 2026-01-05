@@ -8,19 +8,20 @@ import { Separator } from "@/components/ui/separator";
 import { Cat } from "@/models/types";
 import { CatService } from "@/services/cat-service";
 import {
-    ArrowLeft,
-    Calendar,
-    CheckCircle,
-    Heart,
-    MapPin,
-    Shield,
-    Stethoscope,
-    Weight
+  ArrowLeft,
+  Calendar,
+  CheckCircle,
+  Heart,
+  MapPin,
+  Shield,
+  Stethoscope,
+  Weight
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FaCat } from "react-icons/fa";
 import { toast } from "sonner";
 
 export default function CatDetailPage() {
@@ -86,13 +87,20 @@ export default function CatDetailPage() {
           {/* Left: Image */}
           <div className="space-y-4">
             <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl bg-muted border border-border">
-              <Image
-                src={cat.imageUrl}
-                alt={cat.name}
-                fill
-                className="object-cover"
-                priority
-              />
+              {cat.imageUrl ? (
+                <Image
+                  src={cat.imageUrl}
+                  alt={cat.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground/20 bg-muted/50">
+                  <FaCat className="w-32 h-32" />
+                </div>
+              )}
               <Badge className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm text-lg px-4 py-2">
                 {cat.status}
               </Badge>
@@ -202,8 +210,8 @@ export default function CatDetailPage() {
                   Apply for Adoption
                 </Button>
               </Link>
-              <DonationModal 
-                catId={cat.id} 
+              <DonationModal
+                catId={cat.id}
                 catName={cat.name}
                 trigger={
                   <Button size="lg" variant="outline" className="flex-1 h-14 text-lg rounded-full border-2">
