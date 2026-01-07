@@ -6,54 +6,32 @@ import { Cat } from "@/models/types";
 import { Heart, Info, MapPin, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { FaCat } from "react-icons/fa";
 
-const featuredCats: Cat[] = [
-  {
-    id: "1",
-    name: "Luna",
-    breed: "Siamese",
-    age: 2,
-    gender: "Female",
-    location: "New York, NY",
-    imageUrl: "https://images.unsplash.com/photo-1513245543132-31f507417b26?q=80&w=800&auto=format&fit=crop",
-    status: "AVAILABLE"
-  },
-  {
-    id: "2",
-    name: "Oliver",
-    breed: "Maine Coon",
-    age: 4,
-    gender: "Male",
-    location: "Brooklyn, NY",
-    imageUrl: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?q=80&w=800&auto=format&fit=crop",
-    status: "AVAILABLE"
-  },
-  {
-    id: "3",
-    name: "Milo",
-    breed: "Tabby",
-    age: 1,
-    gender: "Male",
-    location: "Queens, NY",
-    imageUrl: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=800&auto=format&fit=crop",
-    status: "AVAILABLE"
-  },
-  {
-    id: "4",
-    name: "Bella",
-    breed: "Persian",
-    age: 3,
-    gender: "Female",
-    location: "New York, NY",
-    imageUrl: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=800&auto=format&fit=crop",
-    status: "AVAILABLE"
-  }
-];
+import { CatService } from "@/services/cat-service";
+import { useEffect, useState } from "react";
+import { CatCardSkeleton } from "../cat/CatCardSkeleton";
 
 export function FeaturedCats() {
+  const [cats, setCats] = useState<Cat[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    fetchFeaturedCats();
+  }, []);
+
+  const fetchFeaturedCats = async () => {
+    try {
+      const result = await CatService.getCats({ status: "AVAILABLE" });
+      // Take only the first 4 for featured section
+      setCats((result.data || []).slice(0, 4));
+    } catch (error) {
+      console.error("Failed to fetch featured cats:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const toggleFavorite = (catId: string) => {
     setFavorites(prev => {
@@ -101,7 +79,11 @@ export function FeaturedCats() {
 
         {/* Cats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {featuredCats.map((cat, index) => (
+          {isLoading ? (
+            [...Array(4)].map((_, i) => (
+              <CatCardSkeleton key={i} />
+            ))
+          ) : cats.map((cat, index) => (
             <div
               key={cat.id}
               className="group relative bg-card rounded-3xl overflow-hidden border border-border shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col hover:-translate-y-2 animate-in fade-in zoom-in"
@@ -137,8 +119,8 @@ export function FeaturedCats() {
                 >
                   <Heart
                     className={`h-5 w-5 transition-colors ${favorites.has(cat.id)
-                        ? "fill-pink-500 text-pink-500"
-                        : "text-muted-foreground"
+                      ? "fill-pink-500 text-pink-500"
+                      : "text-muted-foreground"
                       }`}
                   />
                 </button>

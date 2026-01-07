@@ -40,7 +40,8 @@ export const AdminService = {
     // Moderate content example
     async deleteContent(type: 'cat' | 'user', id: string) {
         const token = localStorage.getItem("accessToken");
-        const response = await fetch(`${API_BASE_URL}/admin/content/${type}/${id}`, {
+        const endpoint = type === 'cat' ? `/cats/${id}` : `/users/${id}`;
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`,

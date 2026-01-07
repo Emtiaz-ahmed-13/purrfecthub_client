@@ -28,16 +28,16 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 const catFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  breed: z.string().min(1, "Breed is required"),
-  age: z.number().min(0, "Age must be positive"),
-  gender: z.enum(["MALE", "FEMALE"]),
-  color: z.string().optional(),
-  weight: z.number().optional(),
-  description: z.string().optional(),
-  isVaccinated: z.boolean(),
-  isNeutered: z.boolean(),
-  specialNeeds: z.string().optional(),
+    name: z.string().min(1, "Name is required"),
+    breed: z.string().min(1, "Breed is required"),
+    age: z.number().min(0, "Age must be positive"),
+    gender: z.enum(["MALE", "FEMALE"]),
+    color: z.string().optional(),
+    weight: z.number().optional(),
+    description: z.string().optional(),
+    isVaccinated: z.boolean(),
+    isNeutered: z.boolean(),
+    specialNeeds: z.string().optional(),
 });
 
 
@@ -98,7 +98,7 @@ export function CatForm({ onSuccess, onCancel, initialData }: CatFormProps) {
             }
             onSuccess();
         } catch (error: any) {
-             toast.error(error.message || `Failed to ${initialData ? "update" : "create"} cat`);
+            toast.error(error.message || `Failed to ${initialData ? "update" : "create"} cat`);
         } finally {
             setIsLoading(false);
         }
@@ -144,9 +144,9 @@ export function CatForm({ onSuccess, onCancel, initialData }: CatFormProps) {
                             <FormItem>
                                 <FormLabel>Age (Months) *</FormLabel>
                                 <FormControl>
-                                    <Input 
-                                        type="number" 
-                                        placeholder="12" 
+                                    <Input
+                                        type="number"
+                                        placeholder="12"
                                         {...field}
                                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
                                     />
@@ -177,8 +177,8 @@ export function CatForm({ onSuccess, onCancel, initialData }: CatFormProps) {
                         )}
                     />
                 </div>
-                
-                 <div className="grid grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
                         name="color"
@@ -199,10 +199,10 @@ export function CatForm({ onSuccess, onCancel, initialData }: CatFormProps) {
                             <FormItem>
                                 <FormLabel>Weight (kg)</FormLabel>
                                 <FormControl>
-                                    <Input 
-                                        type="number" 
-                                        step="0.1" 
-                                        placeholder="4.5" 
+                                    <Input
+                                        type="number"
+                                        step="0.1"
+                                        placeholder="4.5"
                                         {...field}
                                         value={field.value ?? ""}
                                         onChange={(e) => field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)}
@@ -269,19 +269,19 @@ export function CatForm({ onSuccess, onCancel, initialData }: CatFormProps) {
                     />
                 </div>
 
-                 <FormField
-                        control={form.control}
-                        name="specialNeeds"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Special Needs (Optional)</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="None" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                <FormField
+                    control={form.control}
+                    name="specialNeeds"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Special Needs (Optional)</FormLabel>
+                            <FormControl>
+                                <Input placeholder="None" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
                 <FormItem>
                     <FormLabel>Images (Max 5)</FormLabel>
@@ -294,7 +294,7 @@ export function CatForm({ onSuccess, onCancel, initialData }: CatFormProps) {
                             className="cursor-pointer"
                         />
                     </FormControl>
-                     {selectedImages.length > 0 && (
+                    {selectedImages.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-2">
                             {selectedImages.map((file, index) => (
                                 <div key={index} className="relative group">

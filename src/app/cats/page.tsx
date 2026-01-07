@@ -1,5 +1,6 @@
 "use client";
 
+import { CatCardSkeleton } from "@/components/cat/CatCardSkeleton";
 import { DonationModal } from "@/components/donation/DonationModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import { Cat } from "@/models/types";
 import { AdoptionService } from "@/services/adoption-service";
 import { CatService } from "@/services/cat-service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Heart, Loader2, MapPin, Search, Sparkles } from "lucide-react";
+import { Heart, MapPin, Search, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -188,8 +189,10 @@ export default function PublicCatsPage() {
       {/* Cats Grid */}
       <div className="container mx-auto px-4 pb-20">
         {isCatsLoading ? (
-          <div className="flex justify-center p-20">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {[...Array(8)].map((_, i) => (
+              <CatCardSkeleton key={i} />
+            ))}
           </div>
         ) : filteredCats.length === 0 ? (
           <div className="text-center py-20 bg-card rounded-3xl border border-border shadow-lg">

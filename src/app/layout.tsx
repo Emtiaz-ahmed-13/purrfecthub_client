@@ -1,3 +1,4 @@
+import { ChatAIWidget } from "@/components/chatAI/ChatAIWidget";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/auth-context";
@@ -32,6 +33,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             {children}
+            <ChatAIWidget />
             <Toaster />
           </AuthProvider>
         </ThemeProvider>

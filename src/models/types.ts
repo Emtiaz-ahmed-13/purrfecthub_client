@@ -55,6 +55,10 @@ export interface User {
     otherPetsInfo?: string;
     experience?: string;
     aboutMe?: string;
+    shelter?: {
+        id: string;
+        name: string;
+    };
 }
 
 export interface FeatureIcon {
