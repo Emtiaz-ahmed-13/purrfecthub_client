@@ -1,6 +1,5 @@
 "use client";
 
-import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/context/auth-context";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -29,17 +28,12 @@ export default function DashboardLayout({
   }
 
   if (!user) {
-    return null; 
+    return null;
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar />
-      <main className="flex-1 pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {children}
-        </div>
-      </main>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {children}
     </div>
   );
 }

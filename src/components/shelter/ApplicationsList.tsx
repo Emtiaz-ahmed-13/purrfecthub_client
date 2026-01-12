@@ -21,7 +21,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { AdoptionApplication } from "@/models/types";
 import { AdoptionService } from "@/services/adoption-service";
-import { Check, Loader2, X } from "lucide-react";
+import { ChatService } from "@/services/chat-service";
+import { Check, Loader2, MessageCircle, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -31,6 +33,8 @@ export function ApplicationsList() {
     const [selectedApp, setSelectedApp] = useState<AdoptionApplication | null>(null);
     const [reviewNotes, setReviewNotes] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isStartingChat, setIsStartingChat] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         fetchApplications();
@@ -50,7 +54,7 @@ export function ApplicationsList() {
 
     const handleUpdateStatus = async (status: 'APPROVED' | 'REJECTED') => {
         if (!selectedApp) return;
-        
+
         setIsProcessing(true);
         try {
             await AdoptionService.updateApplicationStatus(
@@ -58,7 +62,7 @@ export function ApplicationsList() {
                 status,
                 reviewNotes || undefined
             );
-            
+
             toast.success(`Application ${status.toLowerCase()} successfully!`);
             setSelectedApp(null);
             setReviewNotes("");
@@ -67,6 +71,31 @@ export function ApplicationsList() {
             toast.error(error.message || `Failed to ${status.toLowerCase()} application`);
         } finally {
             setIsProcessing(false);
+        }
+    };
+
+    const handleStartChat = async (adopterId?: string) => {
+        if (!adopterId) {
+            toast.error("Adopter information is missing");
+            return;
+        }
+
+        setIsStartingChat(true);
+        try {
+            const response = await ChatService.createConversation(adopterId);
+            const conversationId = response.data?.id || response.id;
+
+            if (conversationId) {
+                router.push(`/chat?id=${conversationId}`);
+            } else {
+                router.push(`/chat`);
+            }
+            toast.success("Opening chat...");
+        } catch (error: any) {
+            console.error("Failed to start chat:", error);
+            toast.error(error.message || "Failed to start chat");
+        } finally {
+            setIsStartingChat(false);
         }
     };
 
@@ -107,8 +136,8 @@ export function ApplicationsList() {
                                 <Badge
                                     variant={
                                         app.status === 'APPROVED' ? 'default' :
-                                        app.status === 'REJECTED' ? 'destructive' :
-                                        'secondary'
+                                            app.status === 'REJECTED' ? 'destructive' :
+                                                'secondary'
                                     }
                                 >
                                     {app.status}
@@ -123,7 +152,7 @@ export function ApplicationsList() {
                                 Applied: {new Date(app.createdAt).toLocaleDateString()}
                             </p>
                         </CardContent>
-                        {app.status === 'PENDING' && (
+                        {app.status === 'PENDING' ? (
                             <CardFooter className="p-4 pt-0 flex gap-2">
                                 <Button
                                     variant="outline"
@@ -132,6 +161,29 @@ export function ApplicationsList() {
                                     onClick={() => setSelectedApp(app)}
                                 >
                                     Review
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    className="flex-1"
+                                    onClick={() => handleStartChat(app.adopterId)}
+                                    disabled={isStartingChat}
+                                >
+                                    <MessageCircle className="h-4 w-4 mr-2" />
+                                    Chat
+                                </Button>
+                            </CardFooter>
+                        ) : (
+                            <CardFooter className="p-4 pt-0">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full"
+                                    onClick={() => handleStartChat(app.adopterId)}
+                                    disabled={isStartingChat}
+                                >
+                                    <MessageCircle className="h-4 w-4 mr-2" />
+                                    Message Adopter
                                 </Button>
                             </CardFooter>
                         )}
@@ -174,9 +226,21 @@ export function ApplicationsList() {
                         <Button
                             variant="outline"
                             onClick={() => setSelectedApp(null)}
-                            disabled={isProcessing}
+                            disabled={isProcessing || isStartingChat}
                         >
                             Cancel
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            onClick={() => handleStartChat(selectedApp?.adopterId)}
+                            disabled={isProcessing || isStartingChat}
+                        >
+                            {isStartingChat ? (
+                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            ) : (
+                                <MessageCircle className="h-4 w-4 mr-2" />
+                            )}
+                            Chat with Adopter
                         </Button>
                         <Button
                             variant="destructive"

@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth-context";
+import { formatCatAgeShort } from "@/lib/utils";
 import { Cat } from "@/models/types";
 import { AdoptionService } from "@/services/adoption-service";
 import { CatService } from "@/services/cat-service";
@@ -265,7 +266,7 @@ export default function PublicCatsPage() {
                           <p className="text-sm text-muted-foreground font-medium">{cat.breed}</p>
                         </div>
                         <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold">
-                          {cat.age} {cat.age === 1 ? 'yr' : 'yrs'}
+                          {formatCatAgeShort(cat.age)}
                         </div>
                       </div>
                     </Link>

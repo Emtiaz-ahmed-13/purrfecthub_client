@@ -1,5 +1,6 @@
 "use client";
 
+import { API_BASE_URL } from "@/lib/config";
 import { User as BaseUser, UserRole } from "@/models/types";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
@@ -15,6 +16,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (token: string, refreshToken?: string) => void;
   logout: () => void;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -26,25 +28,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      try {
-        const decoded = jwtDecode<User>(token);
-
-        // Check if token is expired
-        const currentTime = Date.now() / 1000;
-        if (decoded.exp && decoded.exp < currentTime) {
-          logout();
-        } else {
-          setUser(decoded);
-        }
-      } catch (error) {
-        console.error("Invalid token:", error);
-        logout();
-      }
-    }
-    setIsLoading(false);
+    refreshUser();
   }, []);
+
+  const refreshUser = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode<User>(token);
+      const currentTime = Date.now() / 1000;
+
+      if (decoded.exp && decoded.exp < currentTime) {
+        logout();
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch full profile from API to get all fields (homeType, experience, etc.)
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const fullUser = data.data?.user || data.user || data;
+        setUser({ ...decoded, ...fullUser });
+      } else {
+        setUser(decoded); // Fallback to decoded token if API fails
+      }
+    } catch (error) {
+      console.error("Auth context refresh error:", error);
+      logout();
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const login = (token: string, refreshToken?: string) => {
     localStorage.setItem("accessToken", token);
@@ -91,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         logout,
+        refreshUser,
         isAuthenticated: !!user,
       }}
     >

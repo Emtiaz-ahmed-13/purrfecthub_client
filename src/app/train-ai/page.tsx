@@ -1,8 +1,10 @@
 "use client";
 
+import AITrainingService from "@/services/ai-training-service";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, BrainCircuit, CheckCircle2, ChevronRight, Globe, Heart, Info, MessageSquare, Send, Sparkles, Zap } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const FloatingIcon = ({ children, delay = 0, x = 0, y = 0 }: { children: React.ReactNode, delay?: number, x?: number, y?: number }) => (
     <motion.div
@@ -25,7 +27,12 @@ const FloatingIcon = ({ children, delay = 0, x = 0, y = 0 }: { children: React.R
 );
 
 export default function TrainAIPage() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        content: string;
+        language: "bn" | "en" | "mixed";
+        intent: "general" | "care" | "adoption" | "health";
+        createdBy: string;
+    }>({
         content: "",
         language: "bn",
         intent: "general",
@@ -44,19 +51,14 @@ export default function TrainAIPage() {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch("http://localhost:5001/api/v1/ai-training/suggest", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                setSubmitted(true);
-                setFormData({ content: "", language: "bn", intent: "general", createdBy: "" });
-                setTimeout(() => setSubmitted(false), 8000);
-            }
+            await AITrainingService.submitSuggestion(formData);
+            setSubmitted(true);
+            setFormData({ content: "", language: "bn", intent: "general", createdBy: "" });
+            toast.success("আপনার প্রশ্নটি সফলভাবে জমা হয়েছে!");
+            setTimeout(() => setSubmitted(false), 8000);
         } catch (error) {
             console.error("Failed to submit:", error);
+            toast.error("দুঃখিত! আপনার প্রশ্ন জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
         } finally {
             setIsSubmitting(false);
         }
@@ -208,7 +210,7 @@ export default function TrainAIPage() {
                                                 <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                                 <select
                                                     value={formData.language}
-                                                    onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                                                    onChange={(e) => setFormData({ ...formData, language: e.target.value as "bn" | "en" | "mixed" })}
                                                     className="w-full bg-slate-900/50 border-slate-800 rounded-2xl pl-11 pr-4 py-4 focus:ring-2 focus:ring-primary/50 border-2 focus:border-primary/50 outline-none transition-all appearance-none cursor-pointer text-slate-200"
                                                 >
                                                     <option value="bn">বাংলা (Bengali)</option>
@@ -224,7 +226,7 @@ export default function TrainAIPage() {
                                                 <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                                 <select
                                                     value={formData.intent}
-                                                    onChange={(e) => setFormData({ ...formData, intent: e.target.value })}
+                                                    onChange={(e) => setFormData({ ...formData, intent: e.target.value as "general" | "care" | "adoption" | "health" })}
                                                     className="w-full bg-slate-900/50 border-slate-800 rounded-2xl pl-11 pr-4 py-4 focus:ring-2 focus:ring-primary/50 border-2 focus:border-primary/50 outline-none transition-all appearance-none cursor-pointer text-slate-200"
                                                 >
                                                     <option value="general">সাধারন আলাপ (General)</option>

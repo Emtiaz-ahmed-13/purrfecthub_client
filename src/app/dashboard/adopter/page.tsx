@@ -209,9 +209,24 @@ function AdopterDashboardContent() {
                                     </div>
                                     <CardDescription>{app.cat.breed}</CardDescription>
                                 </CardHeader>
-                                <CardContent className="px-4 pb-4">
-                                    <p className="text-sm text-muted-foreground line-clamp-2">
+                                <CardContent className="px-4 pb-4 space-y-3">
+                                    {app.message && (
+                                        <div>
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Your Message:</p>
+                                            <p className="text-sm text-foreground/80 mt-1 italic">"{app.message}"</p>
+                                        </div>
+                                    )}
+
+                                    {app.reviewNotes && (
+                                        <div className="bg-primary/5 p-3 rounded-lg border border-primary/10">
+                                            <p className="text-xs font-semibold text-primary uppercase tracking-wider">Message from Shelter:</p>
+                                            <p className="text-sm text-foreground/90 mt-1">{app.reviewNotes}</p>
+                                        </div>
+                                    )}
+
+                                    <p className="text-xs text-muted-foreground mt-2 border-t pt-2">
                                         Sent: {new Date(app.createdAt).toLocaleDateString()}
+                                        {app.reviewedAt && ` • Reviewed: ${new Date(app.reviewedAt).toLocaleDateString()}`}
                                     </p>
                                 </CardContent>
                             </Card>

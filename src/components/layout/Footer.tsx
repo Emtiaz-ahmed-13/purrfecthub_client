@@ -65,9 +65,9 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Newsletter</h3>
             <p className="text-sm text-muted-foreground mb-4">Subscribe to our newsletter for the latest updates.</p>
             <div className="flex gap-2">
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
+              <input
+                type="email"
+                placeholder="Enter your email"
                 className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
               <Button size="sm">Subscribe</Button>

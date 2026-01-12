@@ -80,6 +80,8 @@ export interface AdoptionApplication {
     adopterId?: string;
     status: ApplicationStatus;
     message: string;
+    reviewNotes?: string;
+    reviewedAt?: string;
     createdAt: string;
 }
 
@@ -133,3 +135,38 @@ export interface Donation {
     cat?: Partial<Cat>;
     shelter?: Partial<Shelter>;
 }
+
+export enum RequestStatus {
+    PENDING = 'PENDING',
+    APPROVED = 'APPROVED',
+    REJECTED = 'REJECTED',
+    CANCELLED = 'CANCELLED'
+}
+
+export interface ShelterRequest {
+    id: string;
+    userId: string;
+    shelterId: string;
+    catName: string;
+    breed: string;
+    age: number;
+    gender: 'MALE' | 'FEMALE';
+    description?: string;
+    images: string[];
+    status: RequestStatus;
+    adminNotes?: string;
+    createdAt: string;
+    updatedAt: string;
+    user?: Partial<User>;
+    shelter?: Partial<Shelter>;
+}
+
+export interface CreateShelterRequestData {
+    shelterId: string;
+    catName: string;
+    breed: string;
+    age: number;
+    gender: 'MALE' | 'FEMALE';
+    description?: string;
+}
+

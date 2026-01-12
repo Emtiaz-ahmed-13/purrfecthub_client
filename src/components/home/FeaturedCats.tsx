@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaCat } from "react-icons/fa";
 
+import { formatCatAgeShort } from "@/lib/utils";
 import { CatService } from "@/services/cat-service";
 import { useEffect, useState } from "react";
 import { CatCardSkeleton } from "../cat/CatCardSkeleton";
@@ -136,7 +137,7 @@ export function FeaturedCats() {
                     <p className="text-sm text-muted-foreground font-medium">{cat.breed}</p>
                   </div>
                   <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold">
-                    {cat.age} {cat.age === 1 ? 'yr' : 'yrs'}
+                    {formatCatAgeShort(cat.age)}
                   </div>
                 </div>
 

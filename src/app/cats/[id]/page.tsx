@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { formatCatAge } from "@/lib/utils";
 import { Cat } from "@/models/types";
 import { CatService } from "@/services/cat-service";
 import {
@@ -39,7 +40,9 @@ export default function CatDetailPage() {
   const fetchCatDetails = async () => {
     try {
       const result = await CatService.getCat(catId);
-      setCat(result);
+      // Extract cat data from response
+      const catData = result.data || result;
+      setCat(catData);
     } catch (error) {
       console.error(error);
       toast.error("Failed to load cat details");
@@ -120,7 +123,7 @@ export default function CatDetailPage() {
                 <Calendar className="h-5 w-5 text-primary" />
                 <div>
                   <div className="text-sm text-muted-foreground">Age</div>
-                  <div className="font-semibold">{cat.age} years</div>
+                  <div className="font-semibold">{formatCatAge(cat.age)}</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 border border-border">

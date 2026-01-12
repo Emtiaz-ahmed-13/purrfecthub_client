@@ -37,6 +37,45 @@ export const AdminService = {
         return response.json();
     },
 
+    // Get all cats (for admin)
+    async getAllCats() {
+        const token = localStorage.getItem("accessToken");
+        const response = await fetch(`${API_BASE_URL}/cats`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error("Failed to fetch cats");
+        return response.json();
+    },
+
+    // Get all shelters (for admin)
+    async getAllShelters() {
+        const token = localStorage.getItem("accessToken");
+        const response = await fetch(`${API_BASE_URL}/shelters`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error("Failed to fetch shelters");
+        return response.json();
+    },
+
+    // Verify shelter (admin only)
+    async verifyShelter(shelterId: string, isVerified: boolean) {
+        const token = localStorage.getItem("accessToken");
+        const response = await fetch(`${API_BASE_URL}/shelters/${shelterId}/verify`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ isVerified }),
+        });
+        if (!response.ok) throw new Error("Failed to verify shelter");
+        return response.json();
+    },
+
     // Moderate content example
     async deleteContent(type: 'cat' | 'user', id: string) {
         const token = localStorage.getItem("accessToken");

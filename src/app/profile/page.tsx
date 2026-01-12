@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/context/auth-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Mail, Shield, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -57,6 +58,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const { refreshUser } = useAuth();
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -152,6 +154,7 @@ export default function ProfilePage() {
         throw new Error(data.message || "Failed to update profile");
       }
 
+      await refreshUser(); // Refresh the global auth state
       toast.success("Profile updated successfully");
       setUser(prev => prev ? { ...prev, ...values } : null);
     } catch (error: any) {

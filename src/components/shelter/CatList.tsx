@@ -19,6 +19,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { formatCatAge } from "@/lib/utils";
 import { Cat } from "@/models/types";
 import { CatService } from "@/services/cat-service";
 import { Trash2 } from "lucide-react";
@@ -101,38 +102,37 @@ export function CatList({ shouldRefresh, onEdit }: { shouldRefresh: boolean; onE
                                 No Image
                             </div>
                         )}
-                         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                             <Button 
-                                variant="secondary" 
-                                size="icon" 
+                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                                variant="secondary"
+                                size="icon"
                                 className="h-8 w-8 bg-white/80 hover:bg-white text-gray-700"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     onEdit(cat);
                                 }}
-                             >
+                            >
                                 <PenBox className="h-4 w-4" />
-                             </Button>
+                            </Button>
                         </div>
                     </div>
                     <CardHeader className="p-4 pb-2">
                         <CardTitle className="flex justify-between items-center text-lg">
                             {cat.name}
-                            <span className={`text-xs px-2 py-1 rounded-full ${
-                                cat.status === 'Adopted' ? 'bg-green-100 text-green-800' : 
-                                cat.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
-                                'bg-blue-100 text-blue-800'
-                            }`}>
+                            <span className={`text-xs px-2 py-1 rounded-full ${cat.status === 'Adopted' ? 'bg-green-100 text-green-800' :
+                                cat.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-blue-100 text-blue-800'
+                                }`}>
                                 {cat.status}
                             </span>
                         </CardTitle>
                         <p className="text-sm text-muted-foreground">{cat.breed} • {cat.gender}</p>
                     </CardHeader>
                     <CardContent className="p-4 pt-0 text-sm">
-                        <p>Age: {cat.age} months</p>
+                        <p>Age: {formatCatAge(cat.age)}</p>
                     </CardContent>
                     <CardFooter className="p-4 pt-0 flex justify-end gap-2">
-                         <AlertDialog>
+                        <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button variant="ghost" size="icon" className="text-destructive" onClick={(e) => e.stopPropagation()}>
                                     <Trash2 className="h-4 w-4" />
