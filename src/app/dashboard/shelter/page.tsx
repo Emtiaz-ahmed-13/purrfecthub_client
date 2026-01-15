@@ -41,11 +41,11 @@ import * as z from "zod";
 // ... existing imports
 
 const profileSchema = z.object({
-    name: z.string().min(1, "Shelter name is required"),
-    city: z.string().min(1, "City/Location is required"),
+    name: z.string().min(2, "Shelter name must be at least 2 characters"),
+    city: z.string().min(2, "City is required"),
     description: z.string().optional(),
-    phone: z.string().min(1, "Phone number is required"),
-    address: z.string().optional(),
+    phone: z.string().min(10, "Valid phone number required (min 10 digits)"),
+    address: z.string().min(5, "Address is required (min 5 characters)"),
 });
 
 export default function ShelterDashboard() {
@@ -56,6 +56,8 @@ export default function ShelterDashboard() {
     const [editingCat, setEditingCat] = useState<Cat | undefined>(undefined);
     const [isCheckingProfile, setIsCheckingProfile] = useState(true);
     const [hasProfile, setHasProfile] = useState(false);
+    const [logo, setLogo] = useState<File | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
     // Profile Form
     const profileForm = useForm<z.infer<typeof profileSchema>>({
@@ -92,9 +94,17 @@ export default function ShelterDashboard() {
         }
     };
 
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setLogo(file);
+            setLogoPreview(URL.createObjectURL(file));
+        }
+    };
+
     const onCreateProfile = async (values: z.infer<typeof profileSchema>) => {
         try {
-            await ShelterService.createProfile(values);
+            await ShelterService.createProfile(values, logo || undefined);
             toast.success("Profile created successfully!");
             setHasProfile(true);
         } catch (error: any) {
@@ -198,7 +208,7 @@ export default function ShelterDashboard() {
                                         name="address"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-foreground/80">Address</FormLabel>
+                                                <FormLabel className="text-foreground/80">Address *</FormLabel>
                                                 <FormControl>
                                                     <Input placeholder="e.g. 123 Love Street" className="bg-background/50" {...field} />
                                                 </FormControl>
@@ -207,23 +217,42 @@ export default function ShelterDashboard() {
                                         )}
                                     />
                                 </div>
-                                <FormField
-                                    control={profileForm.control}
-                                    name="description"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-foreground/80">About Your Shelter</FormLabel>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Tell us about your mission, history, and the cats you care for..."
-                                                    className="min-h-[120px] bg-background/50 resize-none"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div className="space-y-4">
+                                    <div className="flex flex-col gap-2">
+                                        <FormLabel className="text-foreground/80">Shelter Logo</FormLabel>
+                                        <div className="flex items-center gap-4">
+                                            {logoPreview && (
+                                                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20">
+                                                    <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-cover" />
+                                                </div>
+                                            )}
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleLogoChange}
+                                                className="bg-background/50 cursor-pointer"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <FormField
+                                        control={profileForm.control}
+                                        name="description"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-foreground/80">About Your Shelter</FormLabel>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Tell us about your mission, history, and the cats you care for..."
+                                                        className="min-h-[120px] bg-background/50 resize-none"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                                 <Button type="submit" size="lg" className="w-full text-base font-semibold shadow-lg hover:shadow-primary/25 transition-all">
                                     Save & Continue to Dashboard
                                 </Button>

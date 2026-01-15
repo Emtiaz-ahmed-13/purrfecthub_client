@@ -42,15 +42,21 @@ export const ShelterService = {
         return response.json();
     },
 
-    async createProfile(data: CreateShelterData) {
+    async createProfile(data: CreateShelterData, logo?: File) {
         const token = localStorage.getItem("accessToken");
+        const formData = new FormData();
+
+        formData.append("data", JSON.stringify(data));
+        if (logo) {
+            formData.append("logo", logo);
+        }
+
         const response = await fetch(`${API_BASE_URL}/shelters/profile`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data),
+            body: formData,
         });
 
         if (!response.ok) {
