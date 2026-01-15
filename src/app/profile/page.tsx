@@ -24,8 +24,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { API_BASE_URL } from "@/lib/config";
 import { User } from "@/models/types";
+import { UserService } from "@/services/user-service";
 import Link from "next/link";
 
 const profileSchema = z.object({
@@ -85,26 +85,8 @@ export default function ProfilePage() {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/users/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          console.error("Profile fetch error:", response.status, response.statusText);
-          const errorBody = await response.text();
-          console.error("Error body:", errorBody);
-
-          if (response.status === 401) {
-            router.push("/login");
-            return;
-          }
-          throw new Error(`Failed to fetch profile: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        const userObj = data.data?.user || data.user || data;
+        const data = await UserService.getMyProfile();
+        const userObj = (data.data?.user || data.user || data) as User;
         console.log("Profile Data:", data);
 
         setUser(userObj);
@@ -133,26 +115,12 @@ export default function ProfilePage() {
   async function onSubmit(values: z.infer<typeof profileSchema>) {
     setSaving(true);
     try {
-      const token = localStorage.getItem("accessToken");
       const payload: any = { ...values };
       if (user && values.email === user.email) {
         delete payload.email;
       }
 
-      const response = await fetch(`${API_BASE_URL}/users/me`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to update profile");
-      }
+      const data = await UserService.updateMyProfile(payload);
 
       await refreshUser(); // Refresh the global auth state
       toast.success("Profile updated successfully");

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { API_BASE_URL } from "@/lib/config";
+import { AIChatService } from "@/services/ai-chat-service";
 import { Bot, Loader2, MessageSquare, Send, User, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -46,18 +46,10 @@ export function ChatAIWidget() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`${API_BASE_URL}/ai/chat`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ message: input }),
-            });
-
-            const data = await response.json();
+            const response = await AIChatService.chatWithAI(input);
 
             const botMessage: Message = {
-                text: data.data || "Sorry, I encountered an error. Please try again.",
+                text: response.data || "Sorry, I encountered an error. Please try again.",
                 sender: "bot",
                 timestamp: new Date(),
             };
@@ -121,8 +113,8 @@ export function ChatAIWidget() {
                                     </div>
                                     <div
                                         className={`p-3 rounded-2xl text-sm break-words whitespace-pre-wrap ${msg.sender === "user"
-                                                ? "bg-primary text-primary-foreground rounded-tr-none"
-                                                : "bg-muted text-foreground rounded-tl-none border"
+                                            ? "bg-primary text-primary-foreground rounded-tr-none"
+                                            : "bg-muted text-foreground rounded-tl-none border"
                                             }`}
                                     >
                                         {msg.text}

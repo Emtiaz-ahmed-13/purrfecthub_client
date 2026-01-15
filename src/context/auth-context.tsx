@@ -1,7 +1,7 @@
 "use client";
 
-import { API_BASE_URL } from "@/lib/config";
 import { User as BaseUser, UserRole } from "@/models/types";
+import { UserService } from "@/services/user-service";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -49,19 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Fetch full profile from API to get all fields (homeType, experience, etc.)
-      const response = await fetch(`${API_BASE_URL}/users/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const fullUser = data.data?.user || data.user || data;
-        setUser({ ...decoded, ...fullUser });
-      } else {
-        setUser(decoded); // Fallback to decoded token if API fails
-      }
+      const data = await UserService.getMyProfile();
+      const fullUser = data.data?.user || data.user || data;
+      setUser({ ...decoded, ...fullUser });
     } catch (error) {
       console.error("Auth context refresh error:", error);
       logout();
