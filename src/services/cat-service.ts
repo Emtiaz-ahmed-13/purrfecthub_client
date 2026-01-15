@@ -112,11 +112,16 @@ export const CatService = {
         }
 
         const responseData = await response.json();
+
+        // Backend returns an array directly in the data field
+        const catsArray = Array.isArray(responseData.data) ? responseData.data : [];
+        const transformedCats = catsArray.map(transformCatResponse);
+
         return {
             ...responseData,
             data: {
-                ...responseData.data,
-                cats: responseData.data?.cats?.map(transformCatResponse) || []
+                cats: transformedCats,
+                meta: responseData.meta
             }
         };
     },
