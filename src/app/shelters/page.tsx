@@ -9,6 +9,7 @@ import { useAuth } from "@/context/auth-context";
 import { Shelter } from "@/models/types";
 import { ShelterService } from "@/services/shelter-service";
 import { Loader2, MapPin, Phone, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { toast } from "sonner";
@@ -23,6 +24,7 @@ interface ExtendedShelter extends Shelter {
 
 export default function SheltersPage() {
     const { user } = useAuth();
+    const router = useRouter();
     const [shelters, setShelters] = useState<ExtendedShelter[]>([]);
     const [filteredShelters, setFilteredShelters] = useState<ExtendedShelter[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -83,14 +85,41 @@ export default function SheltersPage() {
                     Meet the dedicated organizations working tirelessly to find homes for every cat.
                 </p>
 
-                <div className="w-full max-w-md relative mt-4">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search by name or city..."
-                        className="pl-9 h-11 bg-muted/40"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                <div className="w-full max-w-xl relative mt-4">
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                            placeholder="Search by name or city..."
+                            className="pl-12 h-14 text-lg rounded-full border-2 bg-background/80 backdrop-blur-sm"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                {/* Shelter Registration CTA */}
+                <div className="mt-8 w-full max-w-4xl">
+                    <Card className="bg-gradient-to-r from-primary/10 via-pink-500/10 to-purple-600/10 border-none shadow-lg overflow-hidden">
+                        <div className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 text-left">
+                            <div className="space-y-2">
+                                <h3 className="text-2xl font-bold">Partner with PurrfectHub</h3>
+                                <p className="text-muted-foreground">
+                                    Are you a rescue group or shelter? Join our platform to reach thousands of potential adopters and find loving homes for your cats.
+                                </p>
+                            </div>
+                            <div className="flex-shrink-0">
+                                {user?.role === "SHELTER" ? (
+                                    <Button size="lg" className="rounded-full shadow-lg hover:shadow-primary/25 transition-all font-semibold" onClick={() => router.push("/dashboard/shelter")}>
+                                        Manage Your Shelter
+                                    </Button>
+                                ) : (
+                                    <Button size="lg" className="rounded-full shadow-lg hover:shadow-primary/25 transition-all font-semibold" onClick={() => router.push("/register?role=SHELTER")}>
+                                        Register Your Shelter
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </Card>
                 </div>
             </div>
 

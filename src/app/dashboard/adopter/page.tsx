@@ -55,7 +55,7 @@ export default function AdopterDashboard() {
 }
 
 function AdopterDashboardContent() {
-    const { user, isLoading } = useAuth();
+    const { user, isLoading, logout } = useAuth();
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -190,7 +190,26 @@ function AdopterDashboardContent() {
                 </Card>
             )}
 
-            {/* My Applications Section */}
+            {/* Shelter Registration Nudge */}
+            <Card className="bg-gradient-to-r from-blue-500/5 to-cyan-500/5 border-blue-500/10">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        <span>🏠</span>
+                        Own a shelter or rescue group?
+                    </CardTitle>
+                    <CardDescription>
+                        Register a dedicated shelter account to list cats, manage adoptions, and receive donations directly.
+                    </CardDescription>
+                </CardHeader>
+                <CardFooter className="pt-0">
+                    <Button variant="outline" size="sm" className="rounded-full" onClick={() => {
+                        logout();
+                        router.push("/register?role=SHELTER");
+                    }}>
+                        Register Shelter Account
+                    </Button>
+                </CardFooter>
+            </Card>
             {myApplications.length > 0 && (
                 <div className="space-y-4">
                     <h2 className="text-2xl font-semibold">My Applications</h2>
