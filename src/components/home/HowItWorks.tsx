@@ -11,7 +11,7 @@ const steps = [
         titleBn: "বিড়াল খুঁজুন",
         description: "Explore our verified shelters and find cats that match your preferences",
         descriptionBn: "আমাদের verified shelter থেকে আপনার পছন্দের বিড়াল খুঁজুন",
-        color: "from-blue-500 to-cyan-500"
+        color: "from-cyan-500 to-primary"
     },
     {
         number: "02",
@@ -20,7 +20,7 @@ const steps = [
         titleBn: "অনলাইনে আবেদন করুন",
         description: "Submit your adoption application with just a few clicks",
         descriptionBn: "কয়েক ক্লিকেই আপনার দত্তক আবেদন জমা দিন",
-        color: "from-purple-500 to-pink-500"
+        color: "from-primary to-purple-500"
     },
     {
         number: "03",
@@ -29,7 +29,7 @@ const steps = [
         titleBn: "সাক্ষাৎ করুন",
         description: "Visit the shelter to meet your future companion in person",
         descriptionBn: "আপনার ভবিষ্যৎ সঙ্গীর সাথে সরাসরি দেখা করুন",
-        color: "from-pink-500 to-rose-500"
+        color: "from-purple-500 to-pink-500"
     },
     {
         number: "04",
@@ -38,7 +38,7 @@ const steps = [
         titleBn: "বাড়িতে নিয়ে আসুন",
         description: "Complete the process and welcome your new family member",
         descriptionBn: "প্রক্রিয়া সম্পন্ন করুন এবং নতুন পরিবার সদস্যকে স্বাগতম",
-        color: "from-amber-500 to-orange-500"
+        color: "from-pink-500 to-rose-500"
     }
 ];
 
@@ -98,7 +98,7 @@ export function HowItWorks() {
                                 {/* Card */}
                                 <div className="relative bg-card/50 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-border/50 hover:border-primary/50 h-full flex flex-col items-center text-center hover:-translate-y-2">
                                     {/* Step Number Badge */}
-                                    <div className="absolute -top-4 -right-4 w-12 h-12 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-xl z-10">
+                                    <div className="absolute -top-4 -right-4 w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-primary flex items-center justify-center text-white font-bold text-lg shadow-xl z-10">
                                         {step.number}
                                     </div>
 

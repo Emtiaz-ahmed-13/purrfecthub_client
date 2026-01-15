@@ -49,7 +49,7 @@ export function FeaturedCats() {
   return (
     <section className="py-24 bg-background relative overflow-hidden">
       {/* Decorative Elements */}
-      <div className="absolute top-20 right-10 text-primary/10">
+      <div className="absolute top-20 right-10 text-cyan-500/10">
         <Sparkles className="h-32 w-32" />
       </div>
 
@@ -147,7 +147,7 @@ export function FeaturedCats() {
                 </div>
 
                 <Link href={`/cats/${cat.id}`} className="mt-auto w-full">
-                  <Button className="w-full rounded-full bg-gradient-to-r from-primary to-pink-600 hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+                  <Button className="w-full rounded-full bg-gradient-to-r from-cyan-500 to-primary hover:shadow-lg transition-all duration-300 group-hover:scale-105">
                     View Details <Info className="h-4 w-4 ml-2" />
                   </Button>
                 </Link>

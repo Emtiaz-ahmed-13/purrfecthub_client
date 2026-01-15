@@ -11,6 +11,7 @@ export function Hero() {
       {/* Animated Background Gradients */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-700"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-3xl"></div>
       </div>
@@ -28,7 +29,7 @@ export function Hero() {
             {/* Heading */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight">
               Find Your{" "}
-              <span className="bg-gradient-to-r from-primary via-pink-500 to-purple-600 bg-clip-text text-transparent animate-gradient">
+              <span className="bg-gradient-to-r from-cyan-400 via-primary to-purple-600 bg-clip-text text-transparent animate-gradient">
                 Purrfect
               </span>
               <br />
@@ -37,24 +38,24 @@ export function Hero() {
 
             {/* Description */}
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              Connect with verified shelters, track medical records, and give a rescue cat the loving home they deserve. 
+              Connect with verified shelters, track medical records, and give a rescue cat the loving home they deserve.
               <span className="font-semibold text-foreground"> Your journey starts here.</span>
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link href="/cats">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="w-full sm:w-auto text-lg px-8 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-primary to-pink-600 hover:scale-105"
                 >
                   Adopt a Cat <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/shelters">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
+                <Button
+                  variant="outline"
+                  size="lg"
                   className="w-full sm:w-auto text-lg px-8 h-14 rounded-full border-2 hover:bg-muted/50 transition-all duration-300"
                 >
                   <Heart className="mr-2 h-5 w-5" />
@@ -83,14 +84,14 @@ export function Hero() {
           {/* Right Image */}
           <div className="relative mx-auto lg:ml-auto w-full max-w-lg lg:max-w-none animate-in fade-in slide-in-from-right-4 duration-1000 delay-300">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/20 to-pink-500/20 backdrop-blur-sm aspect-square sm:aspect-[4/3] lg:aspect-square border border-white/20">
-              <Image 
-                src="/images/hero-cat.png" 
-                alt="Happy person with a cat"
+              <Image
+                src="/images/hero-cat.png"
+                alt="Futuristic AI-generated kitten"
                 fill
                 className="object-cover"
                 priority
               />
-              
+
               {/* Floating Badge */}
               <div className="absolute bottom-6 left-6 bg-background/95 backdrop-blur-md px-4 py-3 rounded-2xl shadow-lg border border-border/50 animate-bounce-slow">
                 <div className="flex items-center gap-3">
@@ -106,7 +107,7 @@ export function Hero() {
             </div>
 
             {/* Decorative Glow */}
-            <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-gradient-to-r from-primary/30 via-pink-500/30 to-purple-600/30 rounded-full blur-3xl opacity-60 animate-pulse"></div>
+            <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-gradient-to-r from-cyan-500/30 via-primary/30 to-purple-600/30 rounded-full blur-3xl opacity-60 animate-pulse"></div>
           </div>
         </div>
       </div>

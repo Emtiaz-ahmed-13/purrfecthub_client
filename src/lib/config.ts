@@ -2,7 +2,9 @@
 // Automatically switches between localhost and production based on NODE_ENV
 // You can override by setting NEXT_PUBLIC_API_URL in .env
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = typeof window !== 'undefined'
+    ? !window.location.hostname.includes('localhost')
+    : process.env.NODE_ENV === 'production';
 
 // API Base URL - Auto-switch based on environment
 export const API_BASE_URL =

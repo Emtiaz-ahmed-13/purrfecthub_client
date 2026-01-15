@@ -1,11 +1,11 @@
 import { FeatureIcon } from "@/models/types";
 import {
-    Cat,
-    CreditCard,
-    HeartHandshake,
-    MessageCircle,
-    Shield,
-    Stethoscope
+  Cat,
+  CreditCard,
+  HeartHandshake,
+  MessageCircle,
+  Shield,
+  Stethoscope
 } from "lucide-react";
 
 const features: FeatureIcon[] = [
@@ -66,21 +66,21 @@ export function Features() {
             A comprehensive platform designed to make cat adoption, care, and support easier than ever.
           </p>
         </div>
-        
+
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="group relative bg-card/50 backdrop-blur-sm rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-border/50 hover:border-primary/50 flex flex-col items-start hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-4"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {/* Icon */}
               <div className="relative mb-6">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/20 to-pink-500/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
-                  <feature.icon className="h-7 w-7" />
+                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300 border border-cyan-500/20">
+                  <feature.icon className="h-7 w-7 text-cyan-500" />
                 </div>
-                <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                <div className="absolute -inset-2 bg-gradient-to-r from-cyan-400/20 to-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
               </div>
 
               {/* Content */}
@@ -92,7 +92,7 @@ export function Features() {
               </p>
 
               {/* Hover Effect Line */}
-              <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-primary to-pink-500 group-hover:w-full transition-all duration-500 rounded-full"></div>
+              <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-cyan-500 to-primary group-hover:w-full transition-all duration-500 rounded-full"></div>
             </div>
           ))}
         </div>
