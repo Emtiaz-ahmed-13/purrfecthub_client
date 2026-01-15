@@ -8,7 +8,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 export const API_BASE_URL =
     process.env.NEXT_PUBLIC_API_URL ||
     (isProduction
-        ? 'https://purrfecthub-server.onrender.com/api/v1'
+        ? 'https://purrfecthub-server-z726.vercel.app/api/v1'
         : 'http://localhost:5001/api/v1'
     );
 
@@ -16,7 +16,7 @@ export const API_BASE_URL =
 export const SOCKET_URL =
     process.env.NEXT_PUBLIC_SOCKET_URL ||
     (isProduction
-        ? 'https://purrfecthub-server.onrender.com'
+        ? 'https://purrfecthub-server-z726.vercel.app'
         : 'http://localhost:5001'
     );
 
