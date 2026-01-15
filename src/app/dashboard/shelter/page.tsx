@@ -30,7 +30,9 @@ import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { API_BASE_URL } from "@/lib/config";
 import { Cat } from "@/models/types";
+import { CatService } from "@/services/cat-service";
 import { ShelterService } from "@/services/shelter-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -263,17 +265,44 @@ export default function ShelterDashboard() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-                <Card>
+                {/* Shelter Info Card */}
+                <Card className="bg-gradient-to-br from-primary/10 to-pink-500/10 border-primary/20">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">My Cats</CardTitle>
-                        <FaCat className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Your Shelter</CardTitle>
+                        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+                            <FaCat className="h-4 w-4 text-primary" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{/* Stats could be dynamic later */} - </div>
-                        <p className="text-xs text-muted-foreground">Manage your listings below</p>
+                        <ShelterStats />
                     </CardContent>
                 </Card>
-                {/* ... other stats cards ... */}
+
+                {/* Total Cats Card */}
+                <Card className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Cats</CardTitle>
+                        <div className="h-8 w-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                            <FaCat className="h-4 w-4 text-blue-500" />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <CatStats />
+                    </CardContent>
+                </Card>
+
+                {/* Applications Card */}
+                <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/20">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Applications</CardTitle>
+                        <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <span className="text-lg">📋</span>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <ApplicationStats />
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Adoption Applications Section */}
@@ -293,5 +322,111 @@ export default function ShelterDashboard() {
                 <CatList shouldRefresh={refreshTrigger} onEdit={handleEdit} />
             </div>
         </div>
+    );
+}
+
+// Shelter Stats Component
+function ShelterStats() {
+    const [shelter, setShelter] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchShelter = async () => {
+            try {
+                const data = await ShelterService.getMyProfile();
+                setShelter(data);
+            } catch (error) {
+                console.error("Failed to fetch shelter:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchShelter();
+    }, []);
+
+    if (loading) return <div className="text-sm text-muted-foreground">Loading...</div>;
+    if (!shelter) return <div className="text-sm text-muted-foreground">No data</div>;
+
+    return (
+        <>
+            <div className="text-2xl font-bold">{shelter.name || "N/A"}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+                {shelter.city || "Location not set"}
+                {shelter.isVerified && <span className="ml-2 text-green-600">✓ Verified</span>}
+            </p>
+        </>
+    );
+}
+
+// Cat Stats Component
+function CatStats() {
+    const [stats, setStats] = useState({ total: 0, available: 0 });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await CatService.getMyCats(1, 100); // Get all cats
+                const cats = response.data?.cats || [];
+                const available = cats.filter((cat: any) => cat.status === "AVAILABLE").length;
+                setStats({ total: cats.length, available });
+            } catch (error) {
+                console.error("Failed to fetch cat stats:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    if (loading) return <div className="text-sm text-muted-foreground">Loading...</div>;
+
+    return (
+        <>
+            <div className="text-2xl font-bold">{stats.total}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+                {stats.available} available for adoption
+            </p>
+        </>
+    );
+}
+
+// Application Stats Component  
+function ApplicationStats() {
+    const [stats, setStats] = useState({ total: 0, pending: 0 });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/adoptions/shelter/applications`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const applications = data.data || [];
+                    const pending = applications.filter((app: any) => app.status === "PENDING").length;
+                    setStats({ total: applications.length, pending });
+                }
+            } catch (error) {
+                console.error("Failed to fetch application stats:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    if (loading) return <div className="text-sm text-muted-foreground">Loading...</div>;
+
+    return (
+        <>
+            <div className="text-2xl font-bold">{stats.total}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+                {stats.pending} pending review
+            </p>
+        </>
     );
 }

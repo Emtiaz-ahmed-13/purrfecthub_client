@@ -28,7 +28,9 @@ export const ShelterService = {
             throw new Error(error.message || "Failed to fetch shelter profile");
         }
 
-        return response.json();
+        const result = await response.json();
+        // Return the data field from the response, or null if no data
+        return result.data || null;
     },
 
     async getShelters() {
@@ -42,7 +44,7 @@ export const ShelterService = {
 
     async createProfile(data: CreateShelterData) {
         const token = localStorage.getItem("accessToken");
-        const response = await fetch(`${API_BASE_URL}/shelters`, {
+        const response = await fetch(`${API_BASE_URL}/shelters/profile`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -56,6 +58,7 @@ export const ShelterService = {
             throw new Error(error.message || "Failed to create shelter profile");
         }
 
-        return response.json();
+        const result = await response.json();
+        return result.data || result;
     }
 };

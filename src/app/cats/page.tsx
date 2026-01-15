@@ -214,50 +214,52 @@ export default function PublicCatsPage() {
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Card className="overflow-hidden flex flex-col h-full hover:shadow-2xl transition-all duration-500 border-border hover:-translate-y-2 bg-card/50 backdrop-blur-sm">
-                  {/* Image */}
-                  <Link href={`/cats/${cat.id}`} className="relative aspect-square overflow-hidden bg-muted">
-                    {cat.imageUrl ? (
-                      <Image
-                        src={cat.imageUrl}
-                        alt={cat.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground/20 bg-muted/50">
-                        <FaCat className="w-16 h-16" />
-                      </div>
-                    )}
+                  {/* Clickable Card Wrapper */}
+                  <Link href={`/cats/${cat.id}`} className="flex flex-col flex-1">
+                    {/* Image */}
+                    <div className="relative aspect-square overflow-hidden bg-muted">
+                      {cat.imageUrl ? (
+                        <Image
+                          src={cat.imageUrl}
+                          alt={cat.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground/20 bg-muted/50">
+                          <FaCat className="w-16 h-16" />
+                        </div>
+                      )}
 
-                    {/* Gradient Overlay on Hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      {/* Gradient Overlay on Hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                    {/* Status Badge */}
-                    <Badge className="absolute top-3 right-3 bg-primary/90 backdrop-blur-sm border-0 shadow-lg">
-                      Available
-                    </Badge>
+                      {/* Status Badge */}
+                      <Badge className="absolute top-3 right-3 bg-primary/90 backdrop-blur-sm border-0 shadow-lg">
+                        Available
+                      </Badge>
 
-                    {/* Favorite Button */}
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        toggleFavorite(cat.id);
-                      }}
-                      className="absolute top-3 left-3 h-10 w-10 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-transform duration-300 shadow-lg z-10"
-                    >
-                      <Heart
-                        className={`h-5 w-5 transition-colors ${favorites.has(cat.id)
-                          ? "fill-pink-500 text-pink-500"
-                          : "text-muted-foreground"
-                          }`}
-                      />
-                    </button>
-                  </Link>
+                      {/* Favorite Button */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleFavorite(cat.id);
+                        }}
+                        className="absolute top-3 left-3 h-10 w-10 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-transform duration-300 shadow-lg z-10"
+                      >
+                        <Heart
+                          className={`h-5 w-5 transition-colors ${favorites.has(cat.id)
+                            ? "fill-pink-500 text-pink-500"
+                            : "text-muted-foreground"
+                            }`}
+                        />
+                      </button>
+                    </div>
 
-                  {/* Content */}
-                  <CardContent className="flex-1 p-6 bg-gradient-to-b from-card to-card/50">
-                    <Link href={`/cats/${cat.id}`}>
+                    {/* Content */}
+                    <CardContent className="flex-1 p-6 bg-gradient-to-b from-card to-card/50">
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
@@ -269,23 +271,26 @@ export default function PublicCatsPage() {
                           {formatCatAgeShort(cat.age)}
                         </div>
                       </div>
-                    </Link>
 
-                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-4">
-                      {cat.description || "A lovely cat looking for a forever home."}
-                    </p>
+                      <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-4">
+                        {cat.description || "A lovely cat looking for a forever home."}
+                      </p>
 
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <MapPin className="w-4 h-4 text-primary" />
-                      <span className="font-medium">{cat.location}</span>
-                    </div>
-                  </CardContent>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <MapPin className="w-4 h-4 text-primary" />
+                        <span className="font-medium">{cat.location}</span>
+                      </div>
+                    </CardContent>
+                  </Link>
 
-                  {/* Footer Buttons */}
+                  {/* Footer Buttons - Outside Link */}
                   <CardFooter className="grid grid-cols-2 gap-3 p-4 pt-0 bg-card">
                     <Button
                       className="w-full rounded-full bg-gradient-to-r from-primary to-pink-600 hover:shadow-lg transition-all duration-300"
-                      onClick={() => handleApplyClick(cat)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleApplyClick(cat);
+                      }}
                     >
                       <Heart className="mr-2 h-4 w-4" />
                       Adopt
@@ -295,7 +300,11 @@ export default function PublicCatsPage() {
                       catId={cat.id}
                       catName={cat.name}
                       trigger={
-                        <Button variant="outline" className="w-full rounded-full border-2 hover:bg-muted/50">
+                        <Button
+                          variant="outline"
+                          className="w-full rounded-full border-2 hover:bg-muted/50"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           Donate
                         </Button>
                       }
