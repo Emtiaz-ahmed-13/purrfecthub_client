@@ -17,7 +17,7 @@ export function ChatAIWidget() {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
         {
-            text: "Hello! I am your PurrfectHub assistant. How can I help you today?",
+            text: "Hello! I am MeowMate, your PurrfectHub assistant. How can I help you today?",
             sender: "bot",
             timestamp: new Date(),
         },
@@ -78,7 +78,7 @@ export function ChatAIWidget() {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Bot className="w-6 h-6" />
-                                <CardTitle className="text-lg font-bold">Purrfect Assistant</CardTitle>
+                                <CardTitle className="text-lg font-bold">MeowMate</CardTitle>
                             </div>
                             <Button
                                 variant="ghost"

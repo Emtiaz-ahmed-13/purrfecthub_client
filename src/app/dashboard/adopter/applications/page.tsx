@@ -25,9 +25,12 @@ interface Application {
     id: string;
     name: string;
     breed: string;
-  };
-  shelter: {
-    name: string;
+    images: string[];
+    shelter: {
+      id: string;
+      name: string;
+      userId: string;
+    };
   };
   status: "PENDING" | "APPROVED" | "REJECTED";
   message: string;
@@ -106,7 +109,7 @@ export default function ApplicationsPage() {
                       </Link>
                       <div className="text-xs text-muted-foreground">{app.cat.breed}</div>
                     </TableCell>
-                    <TableCell>{app.shelter.name}</TableCell>
+                    <TableCell>{app.cat?.shelter?.name}</TableCell>
                     <TableCell>{new Date(app.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}</TableCell>
                     <TableCell>
                       <Badge
@@ -123,7 +126,7 @@ export default function ApplicationsPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          const shelterUserId = (app.shelter as any).userId;
+                          const shelterUserId = app.cat?.shelter?.userId;
                           if (shelterUserId) {
                             window.location.href = `/chat?id=${shelterUserId}`;
                           } else {

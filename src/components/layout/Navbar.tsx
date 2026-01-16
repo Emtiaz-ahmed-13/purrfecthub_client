@@ -5,15 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Cat, Menu, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "@/context/auth-context";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const isLoggedIn = !!user;
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -45,7 +50,7 @@ export function Navbar() {
             </Link>
 
             {/* Role-based Dashboard & Chat Links */}
-            {isLoggedIn && (
+            {mounted && !isLoading && isLoggedIn && (
               <>
                 <Link
                   href={
@@ -62,7 +67,7 @@ export function Navbar() {
 
             <div className="flex items-center gap-4">
               <ModeToggle />
-              {isLoggedIn ? (
+              {mounted && !isLoading && (isLoggedIn ? (
                 <>
                   <Link href="/profile">
                     <Button variant="ghost" className="font-medium cursor-pointer">
@@ -84,7 +89,7 @@ export function Navbar() {
                     </Button>
                   </Link>
                 </>
-              )}
+              ))}
             </div>
           </div>
 
@@ -134,7 +139,7 @@ export function Navbar() {
             </Link>
 
             {/* Mobile Dashboard & Chat Links */}
-            {isLoggedIn && (
+            {mounted && !isLoading && isLoggedIn && (
               <>
                 <Link
                   href={
@@ -151,7 +156,7 @@ export function Navbar() {
             )}
 
             <div className="pt-4 flex flex-col gap-2 px-3">
-              {isLoggedIn ? (
+              {mounted && !isLoading && (isLoggedIn ? (
                 <>
                   <Link href="/profile" onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full justify-center cursor-pointer">
@@ -171,7 +176,7 @@ export function Navbar() {
                     <Button className="w-full justify-center bg-primary text-primary-foreground cursor-pointer">Get Started</Button>
                   </Link>
                 </>
-              )}
+              ))}
             </div>
           </div>
         </div>
