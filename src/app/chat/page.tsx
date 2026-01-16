@@ -64,18 +64,17 @@ export default function ChatPage() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('id');
-    const catId = urlParams.get('catId');
+    const adoptionId = urlParams.get('adoptionId');
 
-    if (userId && currentUserId) {
-      handleAutoOpenConversation(userId, catId || undefined);
+    if (adoptionId && currentUserId) {
+      handleAutoOpenConversation(adoptionId);
     }
   }, [currentUserId]);
 
-  const handleAutoOpenConversation = async (participantId: string, catId?: string) => {
+  const handleAutoOpenConversation = async (adoptionId: string) => {
     try {
-      // Try to start/get conversation
-      const result = await ChatService.createConversation(participantId, catId);
+      // Try to start/get conversation using adoptionId
+      const result = await ChatService.createConversation(adoptionId);
       const convId = result.id || result.data?.id;
 
       if (convId) {
@@ -85,7 +84,7 @@ export default function ChatPage() {
       }
     } catch (error) {
       console.error("Failed to auto-open conversation:", error);
-      toast.error("Could not open chat with this user");
+      toast.error("Could not open chat for this application");
     }
   };
 
