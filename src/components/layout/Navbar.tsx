@@ -45,6 +45,9 @@ export function Navbar() {
             <Link href="/donate" className="text-foreground/80 hover:text-primary transition-colors font-medium">
               Donate
             </Link>
+            <Link href="/reviews" className="text-foreground/80 hover:text-primary transition-colors font-medium">
+              Reviews
+            </Link>
             <Link href="/train-ai" className="text-foreground/80 hover:text-primary transition-colors font-medium">
               Train AI
             </Link>
@@ -129,6 +132,13 @@ export function Navbar() {
               onClick={() => setIsOpen(false)}
             >
               Donate
+            </Link>
+            <Link
+              href="/reviews"
+              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-accent"
+              onClick={() => setIsOpen(false)}
+            >
+              Reviews
             </Link>
             <Link
               href="/train-ai"
