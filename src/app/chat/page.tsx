@@ -98,6 +98,10 @@ export default function ChatPage() {
   useEffect(() => {
     if (activeConversation) {
       fetchMessages(activeConversation);
+      // Mark conversation as read
+      ChatService.markAsRead(activeConversation).catch(err =>
+        console.error("Failed to mark as read:", err)
+      );
       // Optional: Set up an interval for polling messages if no sockets
       const interval = setInterval(() => fetchMessages(activeConversation), 5000);
       return () => clearInterval(interval);

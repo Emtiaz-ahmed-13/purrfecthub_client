@@ -64,5 +64,17 @@ export const ChatService = {
             return { count: 0 };
         }
         return response.json();
+    },
+
+    async markAsRead(conversationId: string) {
+        const token = localStorage.getItem("accessToken");
+        const response = await fetch(`${API_BASE_URL}/chat/conversations/${conversationId}/read`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error("Failed to mark as read");
+        return response.json();
     }
 };
