@@ -65,9 +65,16 @@ export default function ChatPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const adoptionId = urlParams.get('adoptionId');
+    const conversationId = urlParams.get('conversationId');
 
-    if (adoptionId && currentUserId) {
-      handleAutoOpenConversation(adoptionId);
+    if (currentUserId) {
+      if (conversationId) {
+        // If conversationId is provided, directly set it as active
+        setActiveConversation(conversationId);
+      } else if (adoptionId) {
+        // If adoptionId is provided, create/get conversation
+        handleAutoOpenConversation(adoptionId);
+      }
     }
   }, [currentUserId]);
 

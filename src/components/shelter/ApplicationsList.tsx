@@ -32,8 +32,8 @@ export function ApplicationsList() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedApp, setSelectedApp] = useState<AdoptionApplication | null>(null);
     const [reviewNotes, setReviewNotes] = useState("");
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [isStartingChat, setIsStartingChat] = useState(false);
+    const [processingId, setProcessingId] = useState<string | null>(null);
+    const [startingChatId, setStartingChatId] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -55,7 +55,7 @@ export function ApplicationsList() {
     const handleUpdateStatus = async (status: 'APPROVED' | 'REJECTED') => {
         if (!selectedApp) return;
 
-        setIsProcessing(true);
+        setProcessingId(selectedApp.id);
         try {
             await AdoptionService.updateApplicationStatus(
                 selectedApp.id,
@@ -70,32 +70,33 @@ export function ApplicationsList() {
         } catch (error: any) {
             toast.error(error.message || `Failed to ${status.toLowerCase()} application`);
         } finally {
-            setIsProcessing(false);
+            setProcessingId(null);
         }
     };
 
-    const handleStartChat = async (adopterId?: string) => {
-        if (!adopterId) {
-            toast.error("Adopter information is missing");
+    const handleStartChat = async (adoptionId?: string) => {
+        if (!adoptionId) {
+            toast.error("Application information is missing");
             return;
         }
 
-        setIsStartingChat(true);
+        setStartingChatId(adoptionId);
         try {
-            const response = await ChatService.createConversation(adopterId);
+            const response = await ChatService.createConversation(adoptionId);
             const conversationId = response.data?.id || response.id;
 
             if (conversationId) {
-                router.push(`/chat?id=${conversationId}`);
+                router.push(`/chat?conversationId=${conversationId}`);
+                // Also pass adoptionId as fallback
             } else {
-                router.push(`/chat`);
+                router.push(`/chat?adoptionId=${adoptionId}`);
             }
             toast.success("Opening chat...");
         } catch (error: any) {
             console.error("Failed to start chat:", error);
             toast.error(error.message || "Failed to start chat");
         } finally {
-            setIsStartingChat(false);
+            setStartingChatId(null);
         }
     };
 
@@ -166,8 +167,8 @@ export function ApplicationsList() {
                                     variant="secondary"
                                     size="sm"
                                     className="flex-1"
-                                    onClick={() => handleStartChat(app.adopterId)}
-                                    disabled={isStartingChat}
+                                    onClick={() => handleStartChat(app.id)}
+                                    disabled={startingChatId === app.id}
                                 >
                                     <MessageCircle className="h-4 w-4 mr-2" />
                                     Chat
@@ -179,8 +180,8 @@ export function ApplicationsList() {
                                     variant="outline"
                                     size="sm"
                                     className="w-full"
-                                    onClick={() => handleStartChat(app.adopterId)}
-                                    disabled={isStartingChat}
+                                    onClick={() => handleStartChat(app.id)}
+                                    disabled={startingChatId === app.id}
                                 >
                                     <MessageCircle className="h-4 w-4 mr-2" />
                                     Message Adopter
@@ -226,16 +227,16 @@ export function ApplicationsList() {
                         <Button
                             variant="outline"
                             onClick={() => setSelectedApp(null)}
-                            disabled={isProcessing || isStartingChat}
+                            disabled={processingId !== null || startingChatId !== null}
                         >
                             Cancel
                         </Button>
                         <Button
                             variant="secondary"
-                            onClick={() => handleStartChat(selectedApp?.adopterId)}
-                            disabled={isProcessing || isStartingChat}
+                            onClick={() => handleStartChat(selectedApp?.id)}
+                            disabled={processingId !== null || startingChatId !== null}
                         >
-                            {isStartingChat ? (
+                            {startingChatId === selectedApp?.id ? (
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                             ) : (
                                 <MessageCircle className="h-4 w-4 mr-2" />
@@ -245,9 +246,9 @@ export function ApplicationsList() {
                         <Button
                             variant="destructive"
                             onClick={() => handleUpdateStatus('REJECTED')}
-                            disabled={isProcessing}
+                            disabled={processingId !== null}
                         >
-                            {isProcessing ? (
+                            {processingId === selectedApp?.id ? (
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                             ) : (
                                 <X className="h-4 w-4 mr-2" />
@@ -256,10 +257,10 @@ export function ApplicationsList() {
                         </Button>
                         <Button
                             onClick={() => handleUpdateStatus('APPROVED')}
-                            disabled={isProcessing}
+                            disabled={processingId !== null}
                             className="bg-green-600 hover:bg-green-700"
                         >
-                            {isProcessing ? (
+                            {processingId === selectedApp?.id ? (
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                             ) : (
                                 <Check className="h-4 w-4 mr-2" />
