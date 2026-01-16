@@ -58,6 +58,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const { refreshUser } = useAuth();
 
   const form = useForm<z.infer<typeof profileSchema>>({
@@ -132,6 +133,28 @@ export default function ProfilePage() {
     }
   }
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
+
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    setUploadingAvatar(true);
+    try {
+      const response = await UserService.uploadAvatar(formData);
+      const updatedUser = (response.data?.user || response.user || response) as User;
+
+      setUser(updatedUser);
+      await refreshUser();
+      toast.success("Profile picture updated!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to upload avatar");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -154,12 +177,27 @@ export default function ProfilePage() {
         <div className="grid gap-6 md:grid-cols-[250px_1fr]">
           <Card className="h-fit">
             <CardHeader className="items-center text-center">
-              <Avatar className="h-24 w-24 mb-4">
-                <AvatarImage src="" />
-                <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                  {user?.name ? getInitials(user.name) : "U"}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative group">
+                <Avatar className="h-24 w-24 mb-4 border-2 border-primary/10">
+                  <AvatarImage src={user?.avatar || ""} alt={user?.name} className="object-cover" />
+                  <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                    {user?.name ? getInitials(user.name) : "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-full mb-4">
+                  <label htmlFor="avatar-upload" className="cursor-pointer p-2 bg-white/90 rounded-full shadow-sm hover:bg-white transition-colors">
+                    {uploadingAvatar ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <UserIcon className="h-4 w-4 text-primary" />}
+                  </label>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    disabled={uploadingAvatar}
+                  />
+                </div>
+              </div>
               <CardTitle>{user?.name}</CardTitle>
               <CardDescription className="flex items-center gap-1 mt-1">
                 <Shield className="h-3 w-3" /> {user?.role || "User"}

@@ -19,15 +19,22 @@ interface Message {
 
 interface Conversation {
   id: string;
-  participant: {
+  participants: {
+    user: {
+      id: string;
+      name: string;
+      avatar: string | null;
+      role: string;
+    };
+  }[];
+  cat?: {
     id: string;
     name: string;
-    email: string;
+    images: string[];
   };
-  lastMessage?: {
-    content: string;
-    createdAt: string;
-  };
+  lastMessage?: string;
+  lastMessageAt: string;
+  unreadCount?: number;
   updatedAt: string;
 }
 
@@ -58,16 +65,17 @@ export default function ChatPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('id');
+    const catId = urlParams.get('catId');
 
     if (userId && currentUserId) {
-      handleAutoOpenConversation(userId);
+      handleAutoOpenConversation(userId, catId || undefined);
     }
   }, [currentUserId]);
 
-  const handleAutoOpenConversation = async (participantId: string) => {
+  const handleAutoOpenConversation = async (participantId: string, catId?: string) => {
     try {
       // Try to start/get conversation
-      const result = await ChatService.createConversation(participantId);
+      const result = await ChatService.createConversation(participantId, catId);
       const convId = result.id || result.data?.id;
 
       if (convId) {
@@ -178,25 +186,40 @@ export default function ChatPage() {
               </div>
             ) : (
               <div className="flex flex-col">
-                {conversations.map((conv) => (
-                  <button
-                    key={conv.id}
-                    onClick={() => setActiveConversation(conv.id)}
-                    className={`flex items-center gap-3 p-4 text-left transition-colors hover:bg-muted/50 border-b border-muted/30 ${activeConversation === conv.id ? "bg-primary/5 border-l-4 border-l-primary" : ""
-                      }`}
-                  >
-                    <Avatar>
-                      <AvatarImage src="" />
-                      <AvatarFallback>{conv.participant?.name?.[0] || "U"}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 overflow-hidden">
-                      <div className="font-medium truncate">{conv.participant?.name || "User"}</div>
-                      <div className="text-xs text-muted-foreground truncate">
-                        {conv.lastMessage?.content || "Click to chat"}
+                {conversations.map((conv) => {
+                  const otherParticipant = conv.participants?.find(p => p.user.id !== currentUserId)?.user;
+                  return (
+                    <button
+                      key={conv.id}
+                      onClick={() => setActiveConversation(conv.id)}
+                      className={`flex items-center gap-3 p-4 text-left transition-colors hover:bg-muted/50 border-b border-muted/30 ${activeConversation === conv.id ? "bg-primary/5 border-l-4 border-l-primary" : ""
+                        }`}
+                    >
+                      <Avatar>
+                        <AvatarImage src={otherParticipant?.avatar || ""} />
+                        <AvatarFallback>{otherParticipant?.name?.[0] || "U"}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 overflow-hidden">
+                        <div className="font-medium truncate flex justify-between items-center gap-2">
+                          <span className="truncate">{otherParticipant?.name || "User"}</span>
+                          {conv.unreadCount ? (
+                            <span className="bg-primary text-primary-foreground text-[10px] h-4 w-4 rounded-full flex items-center justify-center">
+                              {conv.unreadCount}
+                            </span>
+                          ) : null}
+                        </div>
+                        {conv.cat && (
+                          <div className="text-[10px] text-primary flex items-center gap-1 font-semibold uppercase tracking-wider mb-1">
+                            🐱 {conv.cat.name}
+                          </div>
+                        )}
+                        <div className="text-xs text-muted-foreground truncate">
+                          {conv.lastMessage || "Click to chat"}
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -213,15 +236,25 @@ export default function ChatPage() {
           ) : (
             <>
               {/* Header */}
-              <div className="p-4 border-b flex items-center gap-3 bg-muted/20">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>
-                    {conversations.find(c => c.id === activeConversation)?.participant?.name?.[0] || "?"}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="font-semibold">
-                  {conversations.find(c => c.id === activeConversation)?.participant?.name || "Chat"}
-                </span>
+              <div className="p-4 border-b flex items-center justify-between bg-muted/20">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={conversations.find(c => c.id === activeConversation)?.participants?.find(p => p.user.id !== currentUserId)?.user.avatar || ""} />
+                    <AvatarFallback>
+                      {conversations.find(c => c.id === activeConversation)?.participants?.find(p => p.user.id !== currentUserId)?.user.name?.[0] || "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="font-semibold leading-tight">
+                      {conversations.find(c => c.id === activeConversation)?.participants?.find(p => p.user.id !== currentUserId)?.user.name || "Chat"}
+                    </span>
+                    {conversations.find(c => c.id === activeConversation)?.cat && (
+                      <span className="text-[10px] text-primary font-medium">
+                        Discussing: {conversations.find(c => c.id === activeConversation)?.cat?.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Messages */}

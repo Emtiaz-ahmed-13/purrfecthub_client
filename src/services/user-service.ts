@@ -189,4 +189,31 @@ export const UserService = {
 
         return response.json();
     },
+
+    /**
+     * Upload profile picture
+     * @param formData - FormData object containing the image
+     * @returns Promise with the updated user data
+     */
+    async uploadAvatar(formData: FormData): Promise<UserResponse> {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            throw new Error("No authentication token found");
+        }
+
+        const response = await fetch(`${API_BASE_URL}/users/upload-avatar`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to upload profile picture");
+        }
+
+        return response.json();
+    },
 };

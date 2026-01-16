@@ -122,7 +122,8 @@ function AdopterDashboardContent() {
 
     const fetchCats = async () => {
         try {
-            const result = await CatService.getCats({ status: "AVAILABLE" });
+            // Fetch all cats to ensure applied ones stay in the list
+            const result = await CatService.getCats({});
             setAvailableCats(result.data || []);
         } catch (error) {
             console.error("Failed to fetch cats:", error);
@@ -138,6 +139,43 @@ function AdopterDashboardContent() {
         } catch (error) {
             console.error("Failed to fetch applications:", error);
         }
+    };
+
+    const handleCancelApplication = async (applicationId: string) => {
+        if (!confirm("Are you sure you want to cancel this application?")) return;
+        try {
+            await AdoptionService.cancelApplication(applicationId);
+            toast.success("Application cancelled successfully");
+            fetchApplications();
+            fetchCats();
+        } catch (error: any) {
+            toast.error(error.message || "Failed to cancel application");
+        }
+    };
+
+    const canCancelApplication = (createdAt: string) => {
+        const created = new Date(createdAt);
+        const now = new Date();
+        const hoursDiff = (now.getTime() - created.getTime()) / (1000 * 60 * 60);
+        return hoursDiff < 5;
+    };
+
+    const getRemainingTime = (createdAt: string) => {
+        const created = new Date(createdAt);
+        const deadline = new Date(created.getTime() + 5 * 60 * 60 * 1000);
+        const now = new Date();
+        const diff = deadline.getTime() - now.getTime();
+
+        if (diff <= 0) return "Expired";
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        return `${hours}h ${minutes}m remaining`;
+    };
+
+    const getApplicationForCat = (catId: string) => {
+        return myApplications.find(app => app.catId === catId);
     };
 
     const onSubmitApplication = async (values: z.infer<typeof applicationSchema>) => {
@@ -189,6 +227,49 @@ function AdopterDashboardContent() {
                     </CardFooter>
                 </Card>
             )}
+
+            {/* Quick Actions */}
+            <div className="grid gap-4 md:grid-cols-3">
+                <Link href="/chat">
+                    <Card className="hover:shadow-lg transition-all cursor-pointer border-2 hover:border-primary/50">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <span className="text-2xl">💬</span>
+                                Chat with Shelters
+                            </CardTitle>
+                            <CardDescription>
+                                Message shelters about adoptions
+                            </CardDescription>
+                        </CardHeader>
+                    </Card>
+                </Link>
+                <Link href="/cats">
+                    <Card className="hover:shadow-lg transition-all cursor-pointer border-2 hover:border-primary/50">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <span className="text-2xl">🐱</span>
+                                Browse All Cats
+                            </CardTitle>
+                            <CardDescription>
+                                Explore all available cats
+                            </CardDescription>
+                        </CardHeader>
+                    </Card>
+                </Link>
+                <Link href="/profile">
+                    <Card className="hover:shadow-lg transition-all cursor-pointer border-2 hover:border-primary/50">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <span className="text-2xl">👤</span>
+                                My Profile
+                            </CardTitle>
+                            <CardDescription>
+                                Update your information
+                            </CardDescription>
+                        </CardHeader>
+                    </Card>
+                </Link>
+            </div>
 
             {/* Shelter Registration Nudge */}
             <Card className="bg-gradient-to-r from-blue-500/5 to-cyan-500/5 border-blue-500/10">
@@ -247,6 +328,31 @@ function AdopterDashboardContent() {
                                         Sent: {new Date(app.createdAt).toLocaleDateString()}
                                         {app.reviewedAt && ` • Reviewed: ${new Date(app.reviewedAt).toLocaleDateString()}`}
                                     </p>
+
+                                    {/* Cancellation Section */}
+                                    {app.status === 'PENDING' && (
+                                        <div className="border-t pt-3 mt-3">
+                                            {canCancelApplication(app.createdAt) ? (
+                                                <div className="space-y-2">
+                                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                                        ⏱️ {getRemainingTime(app.createdAt)} to cancel
+                                                    </p>
+                                                    <Button
+                                                        variant="destructive"
+                                                        size="sm"
+                                                        className="w-full"
+                                                        onClick={() => handleCancelApplication(app.id)}
+                                                    >
+                                                        Cancel Application
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                <p className="text-xs text-muted-foreground text-center italic py-2">
+                                                    Cancellation period expired
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
                         ))}
@@ -301,70 +407,91 @@ function AdopterDashboardContent() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex gap-2 p-4 pt-0">
-                                    <Dialog open={isApplicationOpen && selectedCat?.id === cat.id} onOpenChange={(open) => {
-                                        setIsApplicationOpen(open);
-                                        if (open) setSelectedCat(cat);
-                                        else setSelectedCat(null);
-                                    }}>
-                                        <DialogTrigger asChild>
-                                            <Button className="flex-1" onClick={() => setSelectedCat(cat)}>Apply</Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="max-w-md">
-                                            <DialogHeader>
-                                                <DialogTitle>Adopt {cat.name}</DialogTitle>
-                                                <DialogDescription>
-                                                    Tell the shelter why you'd be a great parent for {cat.name}.
-                                                </DialogDescription>
-                                            </DialogHeader>
-                                            <Form {...form}>
-                                                <form onSubmit={form.handleSubmit(onSubmitApplication)} className="space-y-4">
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="message"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>Message *</FormLabel>
-                                                                <FormControl>
-                                                                    <Textarea placeholder="I have a big garden..." className="resize-none" {...field} />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="homeType"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>Home Type (Optional)</FormLabel>
-                                                                <FormControl>
-                                                                    <Input placeholder="House, Apartment..." {...field} />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="otherPetsInfo"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>Other Pets (Optional)</FormLabel>
-                                                                <FormControl>
-                                                                    <Input placeholder="One dog, two birds..." {...field} />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <Button type="submit" className="w-full">
-                                                        Submit Application
+                                    {getApplicationForCat(cat.id) ? (
+                                        <div className="flex flex-col gap-2 w-full">
+                                            <Badge variant="secondary" className="w-full justify-center py-2 h-10">
+                                                Application {getApplicationForCat(cat.id)?.status}
+                                            </Badge>
+                                            <Link href={`/chat?id=${cat.shelter?.userId}&catId=${cat.id}`} className="w-full">
+                                                <Button variant="outline" size="sm" className="w-full gap-2">
+                                                    💬 Chat with Shelter
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <Dialog open={isApplicationOpen && selectedCat?.id === cat.id} onOpenChange={(open) => {
+                                                setIsApplicationOpen(open);
+                                                if (open) setSelectedCat(cat);
+                                                else setSelectedCat(null);
+                                            }}>
+                                                <DialogTrigger asChild>
+                                                    <Button
+                                                        className="flex-1"
+                                                        onClick={() => setSelectedCat(cat)}
+                                                        disabled={cat.status !== 'AVAILABLE'}
+                                                    >
+                                                        {cat.status === 'AVAILABLE' ? 'Apply' : cat.status}
                                                     </Button>
-                                                </form>
-                                            </Form>
-                                        </DialogContent>
-                                    </Dialog>
-                                    <DonationModal catId={cat.id} catName={cat.name} />
+                                                </DialogTrigger>
+                                                <DialogContent className="max-w-md">
+                                                    <DialogHeader>
+                                                        <DialogTitle>Adopt {cat.name}</DialogTitle>
+                                                        <DialogDescription>
+                                                            Tell the shelter why you'd be a great parent for {cat.name}.
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+                                                    <Form {...form}>
+                                                        <form onSubmit={form.handleSubmit(onSubmitApplication)} className="space-y-4">
+                                                            <FormField
+                                                                control={form.control}
+                                                                name="message"
+                                                                render={({ field }) => (
+                                                                    <FormItem>
+                                                                        <FormLabel>Message *</FormLabel>
+                                                                        <FormControl>
+                                                                            <Textarea placeholder="I have a big garden..." className="resize-none" {...field} />
+                                                                        </FormControl>
+                                                                        <FormMessage />
+                                                                    </FormItem>
+                                                                )}
+                                                            />
+                                                            <FormField
+                                                                control={form.control}
+                                                                name="homeType"
+                                                                render={({ field }) => (
+                                                                    <FormItem>
+                                                                        <FormLabel>Home Type (Optional)</FormLabel>
+                                                                        <FormControl>
+                                                                            <Input placeholder="House, Apartment..." {...field} />
+                                                                        </FormControl>
+                                                                        <FormMessage />
+                                                                    </FormItem>
+                                                                )}
+                                                            />
+                                                            <FormField
+                                                                control={form.control}
+                                                                name="otherPetsInfo"
+                                                                render={({ field }) => (
+                                                                    <FormItem>
+                                                                        <FormLabel>Other Pets (Optional)</FormLabel>
+                                                                        <FormControl>
+                                                                            <Input placeholder="One dog, two birds..." {...field} />
+                                                                        </FormControl>
+                                                                        <FormMessage />
+                                                                    </FormItem>
+                                                                )}
+                                                            />
+                                                            <Button type="submit" className="w-full">
+                                                                Submit Application
+                                                            </Button>
+                                                        </form>
+                                                    </Form>
+                                                </DialogContent>
+                                            </Dialog>
+                                            <DonationModal catId={cat.id} catName={cat.name} />
+                                        </>
+                                    )}
                                 </CardFooter>
                             </Card>
                         ))}

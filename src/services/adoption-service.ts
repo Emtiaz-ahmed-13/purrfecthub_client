@@ -71,5 +71,22 @@ export const AdoptionService = {
         }
 
         return response.json();
+    },
+
+    async cancelApplication(applicationId: string) {
+        const token = localStorage.getItem("accessToken");
+        const response = await fetch(`${API_BASE_URL}/adoptions/${applicationId}/cancel`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to cancel application");
+        }
+
+        return response.json();
     }
 };

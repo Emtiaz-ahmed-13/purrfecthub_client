@@ -16,6 +16,7 @@ export interface Cat {
     specialNeeds?: string;
     shelter?: {
         id: string;
+        userId: string;
         name: string;
         city: string;
         isVerified?: boolean;
