@@ -56,6 +56,7 @@ export default function ShelterDashboard() {
     const [editingCat, setEditingCat] = useState<Cat | undefined>(undefined);
     const [isCheckingProfile, setIsCheckingProfile] = useState(true);
     const [hasProfile, setHasProfile] = useState(false);
+    const [profileData, setProfileData] = useState<any>(null);
     const [logo, setLogo] = useState<File | null>(null);
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
@@ -81,13 +82,17 @@ export default function ShelterDashboard() {
         try {
             const profile = await ShelterService.getMyProfile();
             if (profile) {
-                // Re-fetch profile to ensure it's loaded
-            await checkProfile();
+                setHasProfile(true);
+                setProfileData(profile);
             } else {
                 setHasProfile(false);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to check profile:", error);
+            // If it's an auth error, don't show profile form
+            if (error.message && (error.message.includes("jwt") || error.message.includes("401"))) {
+                console.warn("Authentication error, user may need to re-login");
+            }
             // Assume no profile or error, user can try to create
             setHasProfile(false);
         } finally {
@@ -105,9 +110,12 @@ export default function ShelterDashboard() {
 
     const onCreateProfile = async (values: z.infer<typeof profileSchema>) => {
         try {
-            await ShelterService.createProfile(values, logo || undefined);
+            const newProfile = await ShelterService.createProfile(values, logo || undefined);
             toast.success("Profile created successfully!");
-            // Re-fetch profile to ensure it's loaded
+            // Update profile data immediately
+            setHasProfile(true);
+            setProfileData(newProfile);
+            // Also re-fetch to ensure consistency
             await checkProfile();
         } catch (error: any) {
             toast.error(error.message || "Failed to create profile");
