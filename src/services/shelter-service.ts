@@ -42,6 +42,16 @@ export const ShelterService = {
         return response.json();
     },
 
+    async getShelterById(id: string) {
+        const response = await fetch(`${API_BASE_URL}/shelters/${id}`);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to fetch shelter details");
+        }
+        const result = await response.json();
+        return result.data || result;
+    },
+
     async createProfile(data: CreateShelterData, logo?: File) {
         const token = localStorage.getItem("accessToken");
         const formData = new FormData();

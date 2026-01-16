@@ -178,8 +178,12 @@ export default function SheltersPage() {
                                 >
                                     Submit Cat Request
                                 </Button>
-                                <Button className="w-full" variant="outline" disabled>
-                                    View Details (Coming Soon)
+                                <Button
+                                    className="w-full"
+                                    variant="outline"
+                                    onClick={() => router.push(`/shelters/${shelter.id}`)}
+                                >
+                                    View Details
                                 </Button>
                             </CardFooter>
                         </Card>
