@@ -128,7 +128,7 @@ export function Hero() {
           <div className="relative mx-auto lg:ml-auto w-full max-w-lg lg:max-w-none animate-in fade-in slide-in-from-right-4 duration-1000 delay-300">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/20 to-pink-500/20 backdrop-blur-sm aspect-square sm:aspect-[4/3] lg:aspect-square border border-white/20">
               <Image
-                src="/images/hero-cat.jpg"
+                src="/images/hero-kitten.png"
                 alt="Futuristic AI-generated kitten"
                 fill
                 className="object-cover"
