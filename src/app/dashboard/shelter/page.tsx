@@ -81,7 +81,8 @@ export default function ShelterDashboard() {
         try {
             const profile = await ShelterService.getMyProfile();
             if (profile) {
-                setHasProfile(true);
+                // Re-fetch profile to ensure it's loaded
+            await checkProfile();
             } else {
                 setHasProfile(false);
             }
@@ -106,7 +107,8 @@ export default function ShelterDashboard() {
         try {
             await ShelterService.createProfile(values, logo || undefined);
             toast.success("Profile created successfully!");
-            setHasProfile(true);
+            // Re-fetch profile to ensure it's loaded
+            await checkProfile();
         } catch (error: any) {
             toast.error(error.message || "Failed to create profile");
         }

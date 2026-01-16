@@ -412,7 +412,7 @@ function AdopterDashboardContent() {
                                             <Badge variant="secondary" className="w-full justify-center py-2 h-10">
                                                 Application {getApplicationForCat(cat.id)?.status}
                                             </Badge>
-                                            <Link href={`/chat?id=${cat.shelter?.userId}&catId=${cat.id}`} className="w-full">
+                                            <Link href={`/chat?adoptionId=${getApplicationForCat(cat.id)?.id}`} className="w-full">
                                                 <Button variant="outline" size="sm" className="w-full gap-2">
                                                     💬 Chat with Shelter
                                                 </Button>

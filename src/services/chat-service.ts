@@ -12,7 +12,7 @@ export const ChatService = {
         return response.json();
     },
 
-    async createConversation(participantId: string, catId?: string) {
+    async createConversation(adoptionId: string) {
         const token = localStorage.getItem("accessToken");
         const response = await fetch(`${API_BASE_URL}/chat/conversations`, {
             method: "POST",
@@ -20,7 +20,7 @@ export const ChatService = {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ participantId, catId }),
+            body: JSON.stringify({ adoptionId }),
         });
         if (!response.ok) throw new Error("Failed to create conversation");
         return response.json();
