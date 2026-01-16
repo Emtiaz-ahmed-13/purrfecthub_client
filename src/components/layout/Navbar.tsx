@@ -57,9 +57,6 @@ export function Navbar() {
                 >
                   Dashboard
                 </Link>
-                <Link href="/chat" className="text-foreground/80 hover:text-primary transition-colors font-medium">
-                  Chat
-                </Link>
               </>
             )}
 
@@ -150,13 +147,6 @@ export function Navbar() {
                 >
                   Dashboard
                 </Link>
-                <Link
-                  href="/chat"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-accent"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Chat
-                </Link>
               </>
             )}
 
@@ -185,7 +175,8 @@ export function Navbar() {
             </div>
           </div>
         </div>
-      )}
-    </nav>
+      )
+      }
+    </nav >
   );
 }

@@ -1,11 +1,54 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatTimeAgo } from "@/lib/utils";
+import { CatService } from "@/services/cat-service";
+import { ShelterService } from "@/services/shelter-service";
 import { ArrowRight, Heart, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export function Hero() {
+  const [stats, setStats] = useState({
+    adopted: 2500,
+    shelters: 500,
+    families: 98
+  });
+  const [recentAdoption, setRecentAdoption] = useState<{
+    name: string;
+    time: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const adoptedResult = await CatService.getCats({ status: 'ADOPTED', limit: 1 });
+        const sheltersResult = await ShelterService.getShelters();
+
+        if (adoptedResult.meta?.total !== undefined) {
+          setStats(prev => ({ ...prev, adopted: adoptedResult.meta.total }));
+        }
+
+        if (sheltersResult.meta?.total !== undefined) {
+          setStats(prev => ({ ...prev, shelters: sheltersResult.meta.total }));
+        }
+
+        if (adoptedResult.data && adoptedResult.data.length > 0) {
+          const latest = adoptedResult.data[0];
+          setRecentAdoption({
+            name: latest.name,
+            time: latest.updatedAt ? formatTimeAgo(latest.updatedAt) : "Just now"
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch hero dynamic data:", error);
+      }
+    };
+
+    fetchHeroData();
+  }, []);
+
   return (
     <section className="relative pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
       {/* Animated Background Gradients */}
@@ -23,7 +66,7 @@ export function Hero() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mx-auto lg:mx-0">
               <Sparkles className="h-4 w-4" />
-              <span>Trusted by 500+ Shelters</span>
+              <span>Trusted by {stats.shelters}+ Shelters</span>
             </div>
 
             {/* Heading */}
@@ -67,15 +110,15 @@ export function Hero() {
             {/* Stats */}
             <div className="flex flex-wrap gap-8 justify-center lg:justify-start pt-4">
               <div className="text-center lg:text-left">
-                <div className="text-3xl font-bold text-foreground">2,500+</div>
+                <div className="text-3xl font-bold text-foreground">{stats.adopted.toLocaleString()}+</div>
                 <div className="text-sm text-muted-foreground">Cats Adopted</div>
               </div>
               <div className="text-center lg:text-left">
-                <div className="text-3xl font-bold text-foreground">500+</div>
+                <div className="text-3xl font-bold text-foreground">{stats.shelters.toLocaleString()}+</div>
                 <div className="text-sm text-muted-foreground">Partner Shelters</div>
               </div>
               <div className="text-center lg:text-left">
-                <div className="text-3xl font-bold text-foreground">98%</div>
+                <div className="text-3xl font-bold text-foreground">{stats.families}%</div>
                 <div className="text-sm text-muted-foreground">Happy Families</div>
               </div>
             </div>
@@ -85,7 +128,7 @@ export function Hero() {
           <div className="relative mx-auto lg:ml-auto w-full max-w-lg lg:max-w-none animate-in fade-in slide-in-from-right-4 duration-1000 delay-300">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/20 to-pink-500/20 backdrop-blur-sm aspect-square sm:aspect-[4/3] lg:aspect-square border border-white/20">
               <Image
-                src="/images/hero-cat.png"
+                src="/images/hero-cat.jpg"
                 alt="Futuristic AI-generated kitten"
                 fill
                 className="object-cover"
@@ -93,17 +136,19 @@ export function Hero() {
               />
 
               {/* Floating Badge */}
-              <div className="absolute bottom-6 left-6 bg-background/95 backdrop-blur-md px-4 py-3 rounded-2xl shadow-lg border border-border/50 animate-bounce-slow">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center">
-                    <Heart className="h-5 w-5 text-white fill-white" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">Luna adopted!</div>
-                    <div className="text-xs text-muted-foreground">2 minutes ago</div>
+              {recentAdoption && (
+                <div className="absolute bottom-6 left-6 bg-background/95 backdrop-blur-md px-4 py-3 rounded-2xl shadow-lg border border-border/50 animate-bounce-slow">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center">
+                      <Heart className="h-5 w-5 text-white fill-white" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold">{recentAdoption.name} adopted!</div>
+                      <div className="text-xs text-muted-foreground">{recentAdoption.time}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Decorative Glow */}
