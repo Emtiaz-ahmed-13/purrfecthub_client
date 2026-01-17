@@ -28,8 +28,9 @@ import { AdoptionApplication, Cat, UserRole } from "@/models/types";
 import { AdoptionService } from "@/services/adoption-service";
 import { CatService } from "@/services/cat-service";
 import { DonationService } from "@/services/donation-service";
+import { reviewService } from "@/services/review-service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, MapPin } from "lucide-react";
+import { Loader2, MapPin, Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -64,6 +65,10 @@ function AdopterDashboardContent() {
     const [isCatsLoading, setIsCatsLoading] = useState(true);
     const [selectedCat, setSelectedCat] = useState<Cat | null>(null);
     const [isApplicationOpen, setIsApplicationOpen] = useState(false);
+    const [isReviewOpen, setIsReviewOpen] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState<AdoptionApplication | null>(null);
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewText, setReviewText] = useState("");
 
     const form = useForm<z.infer<typeof applicationSchema>>({
         resolver: zodResolver(applicationSchema),
@@ -191,6 +196,26 @@ function AdopterDashboardContent() {
             form.reset();
         } catch (error: any) {
             toast.error(error.message || "Failed to submit application");
+        }
+    };
+
+    const handleSubmitReview = async () => {
+        if (!selectedApplication) return;
+        try {
+            await reviewService.createReview({
+                rating: reviewRating,
+                text: reviewText,
+                adoptionId: selectedApplication.id,
+                catName: selectedApplication.cat.name,
+            });
+            toast.success("Review submitted! It will be visible after admin approval.");
+            setIsReviewOpen(false);
+            setReviewRating(5);
+            setReviewText("");
+            setSelectedApplication(null);
+            fetchApplications();
+        } catch (error: any) {
+            toast.error(error.message || "Failed to submit review");
         }
     };
 
@@ -353,9 +378,27 @@ function AdopterDashboardContent() {
                                             )}
                                         </div>
                                     )}
+
+                                    {/* Review Section for Completed Adoptions */}
+                                    {app.status === 'COMPLETED' && (
+                                        <div className="border-t pt-3 mt-3">
+                                            <Button
+                                                variant="default"
+                                                size="sm"
+                                                className="w-full gap-2"
+                                                onClick={() => {
+                                                    setSelectedApplication(app);
+                                                    setIsReviewOpen(true);
+                                                }}
+                                            >
+                                                <Star className="h-4 w-4" />
+                                                Write a Review
+                                            </Button>
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
-                        ))}
+                        ))} -
                     </div>
                 </div>
             )}
@@ -498,6 +541,70 @@ function AdopterDashboardContent() {
                     </div>
                 )}
             </div>
+
+            {/* Review Dialog */}
+            <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Write a Review</DialogTitle>
+                        <DialogDescription>
+                            Share your experience adopting {selectedApplication?.cat.name}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Rating</label>
+                            <div className="flex gap-2">
+                                {[1, 2, 3, 4, 5].map((rating) => (
+                                    <button
+                                        key={rating}
+                                        type="button"
+                                        onClick={() => setReviewRating(rating)}
+                                        className="transition-transform hover:scale-110"
+                                    >
+                                        <Star
+                                            className={`h-8 w-8 ${rating <= reviewRating
+                                                ? "fill-amber-400 text-amber-400"
+                                                : "text-muted-foreground"
+                                                }`}
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Your Review</label>
+                            <Textarea
+                                placeholder="Tell us about your experience..."
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
+                                className="min-h-[120px] resize-none"
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                className="flex-1"
+                                onClick={() => {
+                                    setIsReviewOpen(false);
+                                    setReviewRating(5);
+                                    setReviewText("");
+                                    setSelectedApplication(null);
+                                }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                className="flex-1"
+                                onClick={handleSubmitReview}
+                                disabled={!reviewText.trim() || reviewText.length < 10}
+                            >
+                                Submit Review
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

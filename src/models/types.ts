@@ -71,7 +71,9 @@ export interface FeatureIcon {
 export enum ApplicationStatus {
     PENDING = 'PENDING',
     APPROVED = 'APPROVED',
-    REJECTED = 'REJECTED'
+    REJECTED = 'REJECTED',
+    COMPLETED = 'COMPLETED',
+    CANCELLED = 'CANCELLED'
 }
 
 export interface AdoptionApplication {

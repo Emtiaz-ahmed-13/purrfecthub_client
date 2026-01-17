@@ -24,7 +24,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { User } from "@/models/types";
 import { UserService } from "@/services/user-service";
 import Link from "next/link";
 
@@ -55,11 +54,9 @@ function getInitials(name: string) {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const { refreshUser } = useAuth();
+  const { user, isLoading, refreshUser } = useAuth();
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -76,42 +73,29 @@ export default function ProfilePage() {
     },
   });
 
+  // Redirect if not authenticated
   useEffect(() => {
-    const fetchProfile = async () => {
-      const token = localStorage.getItem("accessToken");
-      if (!token || token === "undefined") {
-        console.warn("No valid token found, redirecting to login.");
-        router.push("/login");
-        return;
-      }
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, isLoading, router]);
 
-      try {
-        const data = await UserService.getMyProfile();
-        const userObj = (data.data?.user || data.user || data) as User;
-        console.log("Profile Data:", data);
-
-        setUser(userObj);
-        form.reset({
-          name: userObj.name || "",
-          email: userObj.email || "",
-          phone: userObj.phone || "",
-          address: userObj.address || "",
-          homeType: userObj.homeType || "",
-          hasOtherPets: !!userObj.hasOtherPets,
-          otherPetsInfo: userObj.otherPetsInfo || "",
-          experience: userObj.experience || "",
-          aboutMe: userObj.aboutMe || "",
-        });
-      } catch (error) {
-        console.error(error);
-        toast.error("Could not load profile. Please try logging in again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [router, form]);
+  // Update form when user data is available
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        homeType: user.homeType || "",
+        hasOtherPets: !!user.hasOtherPets,
+        otherPetsInfo: user.otherPetsInfo || "",
+        experience: user.experience || "",
+        aboutMe: user.aboutMe || "",
+      });
+    }
+  }, [user, form]);
 
   async function onSubmit(values: z.infer<typeof profileSchema>) {
     setSaving(true);
@@ -121,11 +105,9 @@ export default function ProfilePage() {
         delete payload.email;
       }
 
-      const data = await UserService.updateMyProfile(payload);
-
+      await UserService.updateMyProfile(payload);
       await refreshUser(); // Refresh the global auth state
       toast.success("Profile updated successfully");
-      setUser(prev => prev ? { ...prev, ...values } : null);
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
     } finally {
@@ -142,10 +124,7 @@ export default function ProfilePage() {
 
     setUploadingAvatar(true);
     try {
-      const response = await UserService.uploadAvatar(formData);
-      const updatedUser = (response.data?.user || response.user || response) as User;
-
-      setUser(updatedUser);
+      await UserService.uploadAvatar(formData);
       await refreshUser();
       toast.success("Profile picture updated!");
     } catch (error: any) {
@@ -155,7 +134,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (isLoading || !user) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
