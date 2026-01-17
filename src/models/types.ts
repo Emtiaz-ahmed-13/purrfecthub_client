@@ -92,8 +92,10 @@ export interface AdoptionApplication {
     message: string;
     reviewNotes?: string;
     reviewedAt?: string;
+    completedAt?: string;
     createdAt: string;
 }
+
 
 export interface CreateApplicationData {
     catId: string;

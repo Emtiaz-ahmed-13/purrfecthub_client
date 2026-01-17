@@ -1,6 +1,7 @@
 "use client";
 
 import { DonationModal } from "@/components/donation/DonationModal";
+import { CatReviews } from "@/components/reviews/CatReviews";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaCat } from "react-icons/fa";
 import { toast } from "sonner";
+
 
 export default function CatDetailPage() {
   const params = useParams();
@@ -204,6 +206,9 @@ export default function CatDetailPage() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Reviews Section */}
+            <CatReviews catId={cat.id} catName={cat.name} />
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">

@@ -296,6 +296,71 @@ function AdopterDashboardContent() {
                 </Link>
             </div>
 
+            {/* My Adopted Cats Section */}
+            {myApplications.filter(app => app.status === 'COMPLETED').length > 0 && (
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-semibold flex items-center gap-2">
+                            <span>🎉</span>
+                            My Adopted Cats
+                            <Badge variant="secondary" className="ml-2">
+                                {myApplications.filter(app => app.status === 'COMPLETED').length}
+                            </Badge>
+                        </h2>
+                    </div>
+                    <p className="text-muted-foreground">
+                        Your successful adoptions! Click to view their story and share your experience.
+                    </p>
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {myApplications
+                            .filter(app => app.status === 'COMPLETED')
+                            .map((app) => (
+                                <Card key={app.id} className="overflow-hidden flex flex-col hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50">
+                                    {/* Cat Image */}
+                                    <div className="aspect-square relative bg-muted">
+                                        {app.cat.imageUrl ? (
+                                            <img
+                                                src={app.cat.imageUrl}
+                                                alt={app.cat.name}
+                                                className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
+                                                <FaCat className="w-16 h-16" />
+                                            </div>
+                                        )}
+                                        <Badge className="absolute top-3 right-3 bg-green-500/90 backdrop-blur-sm">
+                                            Adopted ✓
+                                        </Badge>
+                                    </div>
+                                    <CardHeader className="p-4 pb-3">
+                                        <CardTitle className="flex items-center justify-between">
+                                            {app.cat.name}
+                                            <Badge variant="outline">{app.cat.gender}</Badge>
+                                        </CardTitle>
+                                        <CardDescription>{app.cat.breed}</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="flex-1 px-4 pb-4">
+                                        <p className="text-xs text-muted-foreground mb-3">
+                                            Adopted: {new Date(app.completedAt || app.createdAt).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </p>
+                                        <Link href={`/cats/${app.cat.id}`} className="w-full">
+                                            <Button variant="default" size="sm" className="w-full gap-2 bg-gradient-to-r from-primary to-pink-600">
+                                                <Star className="h-4 w-4" />
+                                                View Story & Reviews
+                                            </Button>
+                                        </Link>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                    </div>
+                </div>
+            )}
+
             {/* Shelter Registration Nudge */}
             <Card className="bg-gradient-to-r from-blue-500/5 to-cyan-500/5 border-blue-500/10">
                 <CardHeader className="pb-3">

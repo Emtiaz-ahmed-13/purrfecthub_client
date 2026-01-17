@@ -205,10 +205,12 @@ export default function ChatPage() {
                       className={`flex items-center gap-3 p-4 text-left transition-colors hover:bg-muted/50 border-b border-muted/30 ${activeConversation === conv.id ? "bg-primary/5 border-l-4 border-l-primary" : ""
                         }`}
                     >
+                      {/* User Avatar */}
                       <Avatar>
                         <AvatarImage src={otherParticipant?.avatar || ""} />
                         <AvatarFallback>{otherParticipant?.name?.[0] || "U"}</AvatarFallback>
                       </Avatar>
+
                       <div className="flex-1 overflow-hidden">
                         <div className="font-medium truncate flex justify-between items-center gap-2">
                           <span className="truncate">{otherParticipant?.name || "User"}</span>
@@ -219,11 +221,23 @@ export default function ChatPage() {
                           ) : null}
                         </div>
                         {conv.cat && (
-                          <div className="text-[10px] text-primary flex items-center gap-1 font-semibold uppercase tracking-wider mb-1">
-                            🐱 {conv.cat.name}
+                          <div className="flex items-center gap-2 mt-1">
+                            {/* Cat Image */}
+                            {conv.cat.images && conv.cat.images.length > 0 ? (
+                              <img
+                                src={conv.cat.images[0]}
+                                alt={conv.cat.name}
+                                className="h-5 w-5 rounded-full object-cover border border-primary/20"
+                              />
+                            ) : (
+                              <span className="text-xs">🐱</span>
+                            )}
+                            <span className="text-[10px] text-primary font-semibold uppercase tracking-wider">
+                              {conv.cat.name}
+                            </span>
                           </div>
                         )}
-                        <div className="text-xs text-muted-foreground truncate">
+                        <div className="text-xs text-muted-foreground truncate mt-1">
                           {conv.lastMessage || "Click to chat"}
                         </div>
                       </div>
@@ -258,14 +272,29 @@ export default function ChatPage() {
                     <span className="font-semibold leading-tight">
                       {conversations.find(c => c.id === activeConversation)?.participants?.find(p => p.user.id !== currentUserId)?.user.name || "Chat"}
                     </span>
-                    {conversations.find(c => c.id === activeConversation)?.cat && (
-                      <span className="text-[10px] text-primary font-medium">
-                        Discussing: {conversations.find(c => c.id === activeConversation)?.cat?.name}
-                      </span>
-                    )}
+                    {(() => {
+                      const activeCat = conversations.find(c => c.id === activeConversation)?.cat;
+                      return activeCat && (
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          {activeCat.images && activeCat.images.length > 0 ? (
+                            <img
+                              src={activeCat.images[0]}
+                              alt={activeCat.name}
+                              className="h-4 w-4 rounded-full object-cover border border-primary/30"
+                            />
+                          ) : (
+                            <span className="text-xs">🐱</span>
+                          )}
+                          <span className="text-[10px] text-primary font-medium">
+                            Discussing: {activeCat.name}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
+
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth" ref={scrollRef}>
