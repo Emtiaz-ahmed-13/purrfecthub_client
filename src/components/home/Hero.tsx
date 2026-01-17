@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { formatTimeAgo } from "@/lib/utils";
 import { CatService } from "@/services/cat-service";
-import { ShelterService } from "@/services/shelter-service";
 import { ArrowRight, Heart, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,8 +10,8 @@ import { useEffect, useState } from "react";
 
 export function Hero() {
   const [stats, setStats] = useState({
-    adopted: 2500,
-    shelters: 500,
+    adopted: 0,
+    shelters: 0,
     families: 98
   });
   const [recentAdoption, setRecentAdoption] = useState<{
@@ -23,17 +22,19 @@ export function Hero() {
   useEffect(() => {
     const fetchHeroData = async () => {
       try {
+        // Fetch stats from dedicated endpoint
+        const statsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/stats`);
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats({
+            adopted: statsData.data?.totalAdopted || 0,
+            shelters: statsData.data?.totalShelters || 0,
+            families: statsData.data?.happyFamiliesPercent || 98
+          });
+        }
+
+        // Fetch recent adoption for badge
         const adoptedResult = await CatService.getCats({ status: 'ADOPTED', limit: 1 });
-        const sheltersResult = await ShelterService.getShelters();
-
-        if (adoptedResult.meta?.total !== undefined) {
-          setStats(prev => ({ ...prev, adopted: adoptedResult.meta.total }));
-        }
-
-        if (sheltersResult.meta?.total !== undefined) {
-          setStats(prev => ({ ...prev, shelters: sheltersResult.meta.total }));
-        }
-
         if (adoptedResult.data && adoptedResult.data.length > 0) {
           const latest = adoptedResult.data[0];
           setRecentAdoption({

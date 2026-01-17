@@ -131,7 +131,7 @@ export function ApplicationsList() {
                                 <div>
                                     <CardTitle className="text-lg">{app.cat.name}</CardTitle>
                                     <CardDescription className="mt-1">
-                                        Applicant: {app.adopterId || 'Unknown'}
+                                        Applicant: {app.adopter?.name || app.adopterId || 'Unknown'}
                                     </CardDescription>
                                 </div>
                                 <Badge

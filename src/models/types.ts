@@ -79,6 +79,13 @@ export interface AdoptionApplication {
     catId: string;
     cat: Partial<Cat>;
     adopterId?: string;
+    adopter?: {
+        id: string;
+        name: string;
+        email?: string;
+        phone?: string;
+        address?: string;
+    };
     status: ApplicationStatus;
     message: string;
     reviewNotes?: string;
