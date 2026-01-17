@@ -21,6 +21,9 @@ export interface Cat {
         city: string;
         isVerified?: boolean;
     };
+    adoptions?: {
+        completedAt: string;
+    }[];
 }
 
 export interface Shelter {

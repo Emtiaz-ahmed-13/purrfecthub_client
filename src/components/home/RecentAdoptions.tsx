@@ -5,8 +5,9 @@ import { formatCatAgeShort } from "@/lib/utils";
 import { Cat } from "@/models/types";
 import { CatService } from "@/services/cat-service";
 import { motion } from "framer-motion";
-import { Heart, Sparkles } from "lucide-react";
+import { ArrowRight, Calendar, Heart, MapPin, Sparkles } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaCat } from "react-icons/fa";
 
@@ -29,6 +30,14 @@ export function RecentAdoptions() {
         }
     };
 
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return "Recently";
+        return new Date(dateString).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
     if (isLoading || cats.length === 0) return null;
 
     return (
@@ -40,31 +49,46 @@ export function RecentAdoptions() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
-                <div className="text-center mb-16">
+                <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
+                    <div className="text-left">
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6 }}
+                        >
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 text-pink-600 text-sm font-semibold mb-4">
+                                <Sparkles className="h-4 w-4 fill-current" />
+                                <span>Found Forever Homes</span>
+                            </div>
+                            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl mb-4">
+                                Recent{" "}
+                                <span className="bg-gradient-to-r from-pink-500 to-primary bg-clip-text text-transparent">
+                                    Adoptions
+                                </span>
+                            </h2>
+                            <p className="text-lg text-muted-foreground max-w-2xl">
+                                These lucky companions have recently found their perfect families.
+                            </p>
+                        </motion.div>
+                    </div>
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 text-pink-600 text-sm font-semibold mb-4">
-                            <Sparkles className="h-4 w-4 fill-current" />
-                            <span>Found Forever Homes</span>
-                        </div>
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl mb-4">
-                            Recent{" "}
-                            <span className="bg-gradient-to-r from-pink-500 to-primary bg-clip-text text-transparent">
-                                Adoptions
-                            </span>
-                        </h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            These lucky companions have recently found their perfect families. We're so happy for them!
-                        </p>
+                        <Link href="/adopted">
+                            <button className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white text-foreground border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all font-medium text-sm">
+                                View All Stories
+                                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                        </Link>
                     </motion.div>
                 </div>
 
                 {/* Cats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                     {cats.map((cat, index) => (
                         <motion.div
                             key={cat.id}
@@ -72,13 +96,13 @@ export function RecentAdoptions() {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="group relative bg-card rounded-3xl overflow-hidden border border-border shadow-md"
+                            className="group relative bg-card rounded-3xl overflow-hidden border border-border shadow-md hover:shadow-xl transition-all duration-500"
                         >
                             {/* Image Container */}
-                            <div className="relative aspect-square grayscale group-hover:grayscale-0 transition-all duration-700">
-                                {cat.imageUrl ? (
+                            <div className="relative aspect-[4/5] grayscale group-hover:grayscale-0 transition-all duration-700">
+                                {cat.imageUrl || (cat.images && cat.images.length > 0) ? (
                                     <Image
-                                        src={cat.imageUrl}
+                                        src={cat.imageUrl || cat.images![0]}
                                         alt={cat.name}
                                         fill
                                         className="object-cover"
@@ -101,16 +125,36 @@ export function RecentAdoptions() {
                             </div>
 
                             {/* Content */}
-                            <div className="p-5 text-center bg-gradient-to-b from-card to-muted/20">
-                                <h3 className="font-bold text-lg text-foreground mb-1">
+                            <div className="p-5 bg-gradient-to-b from-card to-muted/20">
+                                <h3 className="font-bold text-lg text-foreground mb-1 group-hover:text-primary transition-colors">
                                     {cat.name}
                                 </h3>
-                                <p className="text-sm text-muted-foreground font-medium">
+                                <p className="text-sm text-muted-foreground font-medium mb-3">
                                     {cat.breed} • {formatCatAgeShort(cat.age)}
                                 </p>
+                                <div className="flex items-center justify-between text-[11px] text-muted-foreground border-t border-border/50 pt-3">
+                                    <div className="flex items-center gap-1 truncate max-w-[60%]">
+                                        <MapPin className="h-3 w-3 text-primary" />
+                                        <span className="truncate">{cat.shelter?.name || "Shelter"}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Calendar className="h-3 w-3 text-pink-500" />
+                                        <span>{formatDate(cat.adoptions?.[0]?.completedAt)}</span>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     ))}
+                </div>
+
+                {/* Mobile View All Button */}
+                <div className="md:hidden flex justify-center">
+                    <Link href="/adopted" className="w-full">
+                        <button className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white text-foreground border border-border shadow-sm font-medium">
+                            View All Stories
+                            <ArrowRight className="h-4 w-4" />
+                        </button>
+                    </Link>
                 </div>
             </div>
         </section>
