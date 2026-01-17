@@ -10,6 +10,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
     Dialog,
     DialogContent,
@@ -34,6 +35,7 @@ export function ApplicationsList() {
     const [reviewNotes, setReviewNotes] = useState("");
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [startingChatId, setStartingChatId] = useState<string | null>(null);
+    const [confirmComplete, setConfirmComplete] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -75,10 +77,6 @@ export function ApplicationsList() {
     };
 
     const handleCompleteAdoption = async (applicationId: string) => {
-        if (!confirm("Are you sure you want to mark this adoption as completed? This action cannot be undone.")) {
-            return;
-        }
-
         setProcessingId(applicationId);
         try {
             await AdoptionService.completeAdoption(applicationId);
@@ -208,7 +206,7 @@ export function ApplicationsList() {
                                     variant="default"
                                     size="sm"
                                     className="flex-1 bg-green-600 hover:bg-green-700"
-                                    onClick={() => handleCompleteAdoption(app.id)}
+                                    onClick={() => setConfirmComplete(app.id)}
                                     disabled={processingId === app.id}
                                 >
                                     {processingId === app.id ? (
@@ -315,6 +313,22 @@ export function ApplicationsList() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Confirm Complete Dialog */}
+            <ConfirmDialog
+                open={!!confirmComplete}
+                onOpenChange={(open) => !open && setConfirmComplete(null)}
+                title="Complete Adoption"
+                description="Are you sure you want to mark this adoption as completed? This action cannot be undone and will finalize the adoption process."
+                confirmText="Yes, Complete"
+                cancelText="Cancel"
+                onConfirm={() => {
+                    if (confirmComplete) {
+                        handleCompleteAdoption(confirmComplete);
+                        setConfirmComplete(null);
+                    }
+                }}
+            />
         </>
     );
 }

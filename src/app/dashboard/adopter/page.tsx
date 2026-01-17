@@ -5,6 +5,7 @@ import { DonationModal } from "@/components/donation/DonationModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
     Dialog,
     DialogContent,
@@ -69,6 +70,7 @@ function AdopterDashboardContent() {
     const [selectedApplication, setSelectedApplication] = useState<AdoptionApplication | null>(null);
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewText, setReviewText] = useState("");
+    const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
 
     const form = useForm<z.infer<typeof applicationSchema>>({
         resolver: zodResolver(applicationSchema),
@@ -147,7 +149,6 @@ function AdopterDashboardContent() {
     };
 
     const handleCancelApplication = async (applicationId: string) => {
-        if (!confirm("Are you sure you want to cancel this application?")) return;
         try {
             await AdoptionService.cancelApplication(applicationId);
             toast.success("Application cancelled successfully");
@@ -201,13 +202,20 @@ function AdopterDashboardContent() {
 
     const handleSubmitReview = async () => {
         if (!selectedApplication) return;
+
+        console.log('Submitting review for application:', selectedApplication);
+        console.log('Application status:', selectedApplication.status);
+
         try {
-            await reviewService.createReview({
+            const payload = {
                 rating: reviewRating,
                 text: reviewText,
                 adoptionId: selectedApplication.id,
                 catName: selectedApplication.cat.name,
-            });
+            };
+            console.log('Review payload:', payload);
+
+            await reviewService.createReview(payload);
             toast.success("Review submitted! It will be visible after admin approval.");
             setIsReviewOpen(false);
             setReviewRating(5);
@@ -215,6 +223,7 @@ function AdopterDashboardContent() {
             setSelectedApplication(null);
             fetchApplications();
         } catch (error: any) {
+            console.error('Review submission error:', error);
             toast.error(error.message || "Failed to submit review");
         }
     };
@@ -318,9 +327,9 @@ function AdopterDashboardContent() {
                                 <Card key={app.id} className="overflow-hidden flex flex-col hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50">
                                     {/* Cat Image */}
                                     <div className="aspect-square relative bg-muted">
-                                        {app.cat.imageUrl ? (
+                                        {(app.cat.imageUrl || (app.cat.images && app.cat.images.length > 0)) ? (
                                             <img
-                                                src={app.cat.imageUrl}
+                                                src={app.cat.imageUrl || app.cat.images?.[0] || ''}
                                                 alt={app.cat.name}
                                                 className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
                                             />
@@ -431,7 +440,7 @@ function AdopterDashboardContent() {
                                                         variant="destructive"
                                                         size="sm"
                                                         className="w-full"
-                                                        onClick={() => handleCancelApplication(app.id)}
+                                                        onClick={() => setConfirmCancel(app.id)}
                                                     >
                                                         Cancel Application
                                                     </Button>
@@ -670,6 +679,23 @@ function AdopterDashboardContent() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Confirm Cancel Dialog */}
+            <ConfirmDialog
+                open={!!confirmCancel}
+                onOpenChange={(open) => !open && setConfirmCancel(null)}
+                title="Cancel Application"
+                description="Are you sure you want to cancel this adoption application? This action cannot be undone."
+                confirmText="Yes, Cancel"
+                cancelText="Keep Application"
+                variant="destructive"
+                onConfirm={() => {
+                    if (confirmCancel) {
+                        handleCancelApplication(confirmCancel);
+                        setConfirmCancel(null);
+                    }
+                }}
+            />
         </div>
     );
 }

@@ -82,7 +82,8 @@ export const reviewService = {
             body: JSON.stringify(payload),
         });
         if (!response.ok) {
-            throw new Error('Failed to create review');
+            const error = await response.json().catch(() => ({ message: 'Failed to create review' }));
+            throw new Error(error.message || 'Failed to create review');
         }
         return response.json();
     },
