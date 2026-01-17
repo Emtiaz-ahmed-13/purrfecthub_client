@@ -88,5 +88,24 @@ export const AdoptionService = {
         }
 
         return response.json();
+    },
+
+    async completeAdoption(applicationId: string) {
+        const token = localStorage.getItem("accessToken");
+        const response = await fetch(`${API_BASE_URL}/adoptions/${applicationId}/complete`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status: "COMPLETED" }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to complete adoption");
+        }
+
+        return response.json();
     }
 };

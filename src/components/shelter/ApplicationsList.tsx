@@ -74,6 +74,24 @@ export function ApplicationsList() {
         }
     };
 
+    const handleCompleteAdoption = async (applicationId: string) => {
+        if (!confirm("Are you sure you want to mark this adoption as completed? This action cannot be undone.")) {
+            return;
+        }
+
+        setProcessingId(applicationId);
+        try {
+            await AdoptionService.completeAdoption(applicationId);
+            toast.success("Adoption marked as completed! 🎉");
+            fetchApplications(); // Refresh list
+        } catch (error: any) {
+            toast.error(error.message || "Failed to complete adoption");
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+
     const handleStartChat = async (adoptionId?: string) => {
         if (!adoptionId) {
             toast.error("Application information is missing");
@@ -172,6 +190,33 @@ export function ApplicationsList() {
                                 >
                                     <MessageCircle className="h-4 w-4 mr-2" />
                                     Chat
+                                </Button>
+                            </CardFooter>
+                        ) : app.status === 'APPROVED' ? (
+                            <CardFooter className="p-4 pt-0 flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex-1"
+                                    onClick={() => handleStartChat(app.id)}
+                                    disabled={startingChatId === app.id}
+                                >
+                                    <MessageCircle className="h-4 w-4 mr-2" />
+                                    Chat
+                                </Button>
+                                <Button
+                                    variant="default"
+                                    size="sm"
+                                    className="flex-1 bg-green-600 hover:bg-green-700"
+                                    onClick={() => handleCompleteAdoption(app.id)}
+                                    disabled={processingId === app.id}
+                                >
+                                    {processingId === app.id ? (
+                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    ) : (
+                                        <Check className="h-4 w-4 mr-2" />
+                                    )}
+                                    Complete
                                 </Button>
                             </CardFooter>
                         ) : (
