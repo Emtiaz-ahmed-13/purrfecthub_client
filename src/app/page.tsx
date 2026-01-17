@@ -3,7 +3,7 @@ import { FeaturedCats } from "@/components/home/FeaturedCats";
 import { Features } from "@/components/home/Features";
 import { Hero } from "@/components/home/Hero";
 import { HowItWorks } from "@/components/home/HowItWorks";
-import { Testimonials } from "@/components/home/Testimonials";
+import { Reviews } from "@/components/home/Reviews";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
       <Features />
       <HowItWorks />
       <FeaturedCats />
-      <Testimonials />
+      <Reviews />
       <CTA />
     </>
   );

@@ -7,7 +7,7 @@ import { Quote, Star } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export function Testimonials() {
+export function Reviews() {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -31,7 +31,7 @@ export function Testimonials() {
             <section className="py-24 bg-gradient-to-b from-background via-muted/30 to-background">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
-                        <p className="text-muted-foreground">Loading testimonials...</p>
+                        <p className="text-muted-foreground">Loading reviews...</p>
                     </div>
                 </div>
             </section>
@@ -75,9 +75,9 @@ export function Testimonials() {
                             <span>Success Stories</span>
                         </div>
                         <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl mb-4">
-                            Happy Tails from{" "}
+                            Community{" "}
                             <span className="bg-gradient-to-r from-primary to-pink-600 bg-clip-text text-transparent">
-                                Our Community
+                                Reviews
                             </span>
                         </h2>
                         <p className="text-lg text-muted-foreground">
@@ -86,7 +86,7 @@ export function Testimonials() {
                     </motion.div>
                 </div>
 
-                {/* Testimonials Grid */}
+                {/* Reviews Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {reviews.map((review, index) => (
                         <motion.div
@@ -109,7 +109,7 @@ export function Testimonials() {
                                 ))}
                             </div>
 
-                            {/* Testimonial Text */}
+                            {/* Review Text */}
                             <p className="text-muted-foreground leading-relaxed mb-6 relative z-10 text-base">
                                 "{review.text}"
                             </p>
