@@ -1,6 +1,6 @@
 # PurrfectHub
 
-![PurrfectHub Banner](/images/hero-cat.png)
+![PurrfectHub Banner](public/images/hero-kitten.png)
 
 ## 📋 Overview
 

@@ -92,3 +92,17 @@ This document lists all the REST API endpoints available in the PurrfectHub syst
 | `POST` | `/chat/conversations` | Start conversation |
 | `GET` | `/chat/conversations/:id/messages` | Get messages |
 | `GET` | `/chat/unread-count` | [NEW] Get unread count |
+| `POST` | `/chat/conversations/:id/messages` | Send message |
+
+---
+
+## ⭐ Reviews (/api/v1/reviews)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/reviews` | List all reviews (Approved) |
+| `POST` | `/reviews` | Create review (Adopter/Shelter) |
+| `GET` | `/reviews/stats` | Get review statistics |
+| `GET` | `/reviews/:id` | Get specific review |
+| `PATCH` | `/reviews/:id` | Update review |
+| `DELETE` | `/reviews/:id` | Delete review |
+
