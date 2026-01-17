@@ -236,8 +236,8 @@ export default function PublicCatsPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                       {/* Status Badge */}
-                      <Badge className={`absolute top-3 right-3 backdrop-blur-sm border-0 shadow-lg ${cat.status === 'ADOPTED' ? 'bg-pink-600/90' : 'bg-primary/90'}`}>
-                        {cat.status === 'ADOPTED' ? 'Adopted' : 'Available'}
+                      <Badge className={`absolute top-3 right-3 backdrop-blur-sm border-0 shadow-lg ${cat.status === 'ADOPTED' ? 'bg-pink-600/90' : cat.status === 'PENDING' ? 'bg-amber-500/90' : 'bg-primary/90'}`}>
+                        {cat.status === 'ADOPTED' ? 'Adopted' : cat.status === 'PENDING' ? 'Applied' : 'Available'}
                       </Badge>
 
                       {/* Favorite Button */}
@@ -265,7 +265,15 @@ export default function PublicCatsPage() {
                           <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                             {cat.name}
                           </h3>
-                          <p className="text-sm text-muted-foreground font-medium">{cat.breed}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <p className="text-sm text-muted-foreground font-medium">{cat.breed}</p>
+                            {cat._count && cat._count.adoptions > 0 && (
+                              <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-600 border border-cyan-200">
+                                <FaCat className="w-2.5 h-2.5" />
+                                {cat._count.adoptions} {cat._count.adoptions === 1 ? 'Applicant' : 'Applicants'}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold">
                           {formatCatAgeShort(cat.age)}

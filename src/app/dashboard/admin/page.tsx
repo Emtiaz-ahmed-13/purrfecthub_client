@@ -409,6 +409,25 @@ function ReviewsManagement() {
         }
     };
 
+    const handleApproveReview = async (id: string) => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://purrfecthub-server.render.com/api/v1'}/reviews/${id}/approve`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+            if (response.ok) {
+                toast.success("Review approved");
+                setReviews(reviews.map(r => r.id === id ? { ...r, isApproved: true } : r));
+            } else {
+                toast.error("Failed to approve review");
+            }
+        } catch (error) {
+            toast.error("Failed to approve review");
+        }
+    };
+
     if (isLoading) return <div>Loading reviews...</div>;
 
     return (
@@ -424,6 +443,7 @@ function ReviewsManagement() {
                             <TableHead>Reviewer</TableHead>
                             <TableHead>Rating</TableHead>
                             <TableHead>Review</TableHead>
+                            <TableHead>Status</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -447,9 +467,21 @@ function ReviewsManagement() {
                                     {review.text}
                                 </TableCell>
                                 <TableCell>
-                                    <Button size="sm" variant="destructive" onClick={() => handleDeleteReview(review.id)}>
-                                        Remove
-                                    </Button>
+                                    <Badge variant={review.isApproved ? "default" : "outline"}>
+                                        {review.isApproved ? "Approved" : "Pending"}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex gap-2">
+                                        {!review.isApproved && (
+                                            <Button size="sm" variant="default" onClick={() => handleApproveReview(review.id)}>
+                                                <CheckCircle className="mr-2 h-4 w-4" /> Approve
+                                            </Button>
+                                        )}
+                                        <Button size="sm" variant="destructive" onClick={() => handleDeleteReview(review.id)}>
+                                            Remove
+                                        </Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}

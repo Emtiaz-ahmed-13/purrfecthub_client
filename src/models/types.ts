@@ -24,6 +24,9 @@ export interface Cat {
     adoptions?: {
         completedAt: string;
     }[];
+    _count?: {
+        adoptions: number;
+    };
 }
 
 export interface Shelter {
