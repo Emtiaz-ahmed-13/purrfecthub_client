@@ -70,7 +70,7 @@ export function Reviews() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 text-amber-600 text-sm font-semibold mb-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 text-amber-500 dark:text-amber-400 text-sm font-semibold mb-4">
                             <Star className="h-4 w-4 fill-current" />
                             <span>Success Stories</span>
                         </div>

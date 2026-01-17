@@ -57,7 +57,7 @@ export function RecentAdoptions() {
                             viewport={{ once: true }}
                             transition={{ duration: 0.6 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 text-pink-600 text-sm font-semibold mb-4">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 text-pink-500 dark:text-pink-400 text-sm font-semibold mb-4">
                                 <Sparkles className="h-4 w-4 fill-current" />
                                 <span>Found Forever Homes</span>
                             </div>
@@ -79,7 +79,7 @@ export function RecentAdoptions() {
                         transition={{ duration: 0.6 }}
                     >
                         <Link href="/adopted">
-                            <button className="group flex items-center gap-2 px-6 py-3 rounded-full bg-white text-foreground border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all font-medium text-sm">
+                            <button className="group flex items-center gap-2 px-6 py-3 rounded-full bg-background dark:bg-muted/50 text-foreground border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all font-medium text-sm">
                                 View All Stories
                                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                             </button>
@@ -150,7 +150,7 @@ export function RecentAdoptions() {
                 {/* Mobile View All Button */}
                 <div className="md:hidden flex justify-center">
                     <Link href="/adopted" className="w-full">
-                        <button className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white text-foreground border border-border shadow-sm font-medium">
+                        <button className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-background text-foreground border border-border shadow-sm font-medium">
                             View All Stories
                             <ArrowRight className="h-4 w-4" />
                         </button>

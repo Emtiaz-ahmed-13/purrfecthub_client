@@ -56,7 +56,7 @@ export default function AdoptedCatsPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 text-pink-600 text-sm font-semibold mb-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 text-pink-500 dark:text-pink-400 text-sm font-semibold mb-4">
                             <Sparkles className="h-4 w-4 fill-current" />
                             <span>Success Stories</span>
                         </div>
