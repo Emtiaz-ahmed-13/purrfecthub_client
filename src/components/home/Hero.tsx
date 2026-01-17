@@ -23,7 +23,7 @@ export function Hero() {
     const fetchHeroData = async () => {
       try {
         // Fetch stats from dedicated endpoint
-        const statsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/stats`);
+        const statsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stats`);
         if (statsResponse.ok) {
           const statsData = await statsResponse.json();
           setStats({
