@@ -114,29 +114,42 @@ export function Reviews() {
                                 "{review.text}"
                             </p>
 
-                            {/* User Info */}
+                            {/* User Info & Cat Info */}
                             <div className="flex items-center gap-4 pt-4 border-t border-border/50">
-                                <div className="relative h-14 w-14 rounded-full overflow-hidden bg-gradient-to-br from-primary/20 to-pink-500/20 flex items-center justify-center">
-                                    {review.reviewer.avatar ? (
-                                        <img
-                                            src={review.reviewer.avatar}
-                                            alt={review.reviewer.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="text-2xl font-bold text-primary">
-                                            {review.reviewer.name.charAt(0)}
+                                <div className="flex -space-x-3">
+                                    {/* Reviewer Avatar */}
+                                    <div className="relative h-12 w-12 rounded-full border-2 border-card overflow-hidden bg-gradient-to-br from-primary/20 to-pink-500/20 flex items-center justify-center z-10">
+                                        {review.reviewer.avatar ? (
+                                            <img
+                                                src={review.reviewer.avatar}
+                                                alt={review.reviewer.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="text-xl font-bold text-primary">
+                                                {review.reviewer.name.charAt(0)}
+                                            </div>
+                                        )}
+                                    </div>
+                                    {/* Cat Avatar (if available) */}
+                                    {review.adoption?.cat?.images?.[0] && (
+                                        <div className="relative h-12 w-12 rounded-full border-2 border-card overflow-hidden bg-muted flex items-center justify-center">
+                                            <img
+                                                src={review.adoption.cat.images[0]}
+                                                alt={review.adoption.cat.name}
+                                                className="w-full h-full object-cover"
+                                            />
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex-1">
-                                    <div className="font-semibold text-foreground">{review.reviewer.name}</div>
-                                    <div className="text-sm text-muted-foreground">
+                                <div className="flex-1 min-w-0">
+                                    <div className="font-semibold text-foreground truncate">{review.reviewer.name}</div>
+                                    <div className="text-sm text-muted-foreground truncate italic">
                                         {review.catName && `Adopted ${review.catName}`}
                                         {review.shelter && ` • ${review.shelter.name}`}
                                     </div>
                                 </div>
-                                <div className="text-xs text-muted-foreground">
+                                <div className="text-[10px] text-muted-foreground whitespace-nowrap">
                                     {new Date(review.createdAt).toLocaleDateString()}
                                 </div>
                             </div>

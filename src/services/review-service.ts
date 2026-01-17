@@ -21,6 +21,13 @@ export interface Review {
         id: string;
         name: string;
     } | null;
+    adoption?: {
+        id: string;
+        cat: {
+            name: string;
+            images: string[];
+        };
+    } | null;
 }
 
 export interface CreateReviewPayload {

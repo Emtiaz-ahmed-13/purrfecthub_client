@@ -88,7 +88,7 @@ export default function PublicCatsPage() {
 
   const fetchCats = async () => {
     try {
-      const result = await CatService.getCats({ status: "AVAILABLE" });
+      const result = await CatService.getCats();
       setAvailableCats(result.data || []);
       setFilteredCats(result.data || []);
     } catch (error) {
@@ -236,8 +236,8 @@ export default function PublicCatsPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                       {/* Status Badge */}
-                      <Badge className="absolute top-3 right-3 bg-primary/90 backdrop-blur-sm border-0 shadow-lg">
-                        Available
+                      <Badge className={`absolute top-3 right-3 backdrop-blur-sm border-0 shadow-lg ${cat.status === 'ADOPTED' ? 'bg-pink-600/90' : 'bg-primary/90'}`}>
+                        {cat.status === 'ADOPTED' ? 'Adopted' : 'Available'}
                       </Badge>
 
                       {/* Favorite Button */}
@@ -286,14 +286,18 @@ export default function PublicCatsPage() {
                   {/* Footer Buttons - Outside Link */}
                   <CardFooter className="grid grid-cols-2 gap-3 p-4 pt-0 bg-card">
                     <Button
-                      className="w-full rounded-full bg-gradient-to-r from-primary to-pink-600 hover:shadow-lg transition-all duration-300"
+                      className={`w-full rounded-full transition-all duration-300 ${cat.status === 'ADOPTED'
+                        ? 'bg-muted text-muted-foreground cursor-not-allowed opacity-70'
+                        : 'bg-gradient-to-r from-primary to-pink-600 hover:shadow-lg'
+                        }`}
+                      disabled={cat.status === 'ADOPTED'}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleApplyClick(cat);
                       }}
                     >
                       <Heart className="mr-2 h-4 w-4" />
-                      Adopt
+                      {cat.status === 'ADOPTED' ? 'Adopted' : 'Adopt'}
                     </Button>
 
                     <DonationModal

@@ -15,7 +15,7 @@ import {
 import { Cat, User, UserStatus } from "@/models/types";
 import { AdminService } from "@/services/admin-service";
 import { CatService } from "@/services/cat-service";
-import { Activity, Ban, CheckCircle, Shield, Store, Users } from "lucide-react";
+import { Activity, Ban, CheckCircle, Shield, Star, Store, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -134,6 +134,14 @@ export default function AdminDashboard() {
                         style={{ borderColor: activeTab === "cats" ? "var(--primary)" : "transparent" }}
                     >
                         Cats
+                    </Button>
+                    <Button
+                        variant={activeTab === "reviews" ? "default" : "ghost"}
+                        onClick={() => setActiveTab("reviews")}
+                        className="rounded-none border-b-2 border-transparent hover:bg-muted"
+                        style={{ borderColor: activeTab === "reviews" ? "var(--primary)" : "transparent" }}
+                    >
+                        Reviews
                     </Button>
                 </div>
 
@@ -347,7 +355,107 @@ export default function AdminDashboard() {
                     </Card>
                 )}
 
+                {/* Reviews Tab */}
+                {activeTab === "reviews" && (
+                    <ReviewsManagement />
+                )}
+
             </div>
         </div>
+    );
+}
+
+function ReviewsManagement() {
+    const [reviews, setReviews] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        fetchReviews();
+    }, []);
+
+    const fetchReviews = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://purrfecthub-server.render.com/api/v1'}/reviews`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+            const data = await response.json();
+            setReviews(data.data || []);
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load reviews");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDeleteReview = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this review?")) return;
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://purrfecthub-server.render.com/api/v1'}/reviews/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+            if (response.ok) {
+                toast.success("Review deleted");
+                setReviews(reviews.filter(r => r.id !== id));
+            }
+        } catch (error) {
+            toast.error("Failed to delete review");
+        }
+    };
+
+    if (isLoading) return <div>Loading reviews...</div>;
+
+    return (
+        <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <CardHeader>
+                <CardTitle>Reviews Management</CardTitle>
+                <CardDescription>Manage community reviews and success stories.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Reviewer</TableHead>
+                            <TableHead>Rating</TableHead>
+                            <TableHead>Review</TableHead>
+                            <TableHead>Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {reviews.map((review) => (
+                            <TableRow key={review.id}>
+                                <TableCell className="font-medium">
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex flex-col">
+                                            <span>{review.reviewer?.name}</span>
+                                            <span className="text-xs text-muted-foreground">{review.catName && `Adopted ${review.catName}`}</span>
+                                        </div>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-1">
+                                        {review.rating} <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                    </div>
+                                </TableCell>
+                                <TableCell className="max-w-md truncate">
+                                    {review.text}
+                                </TableCell>
+                                <TableCell>
+                                    <Button size="sm" variant="destructive" onClick={() => handleDeleteReview(review.id)}>
+                                        Remove
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
     );
 }
