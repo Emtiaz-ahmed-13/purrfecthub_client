@@ -14,7 +14,10 @@ export function Reviews() {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await reviewService.getReviews({ limit: 4 });
+                const response = await reviewService.getReviews({
+                    limit: 4,
+                    isApproved: true
+                });
                 setReviews(response.data || []);
             } catch (error) {
                 console.error('Failed to fetch reviews:', error);

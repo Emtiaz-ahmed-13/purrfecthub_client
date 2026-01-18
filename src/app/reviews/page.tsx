@@ -19,7 +19,8 @@ export default function ReviewsPage() {
             try {
                 const response = await reviewService.getReviews({
                     page,
-                    limit
+                    limit,
+                    isApproved: true
                 });
                 setReviews(response.data || []);
                 if (response.meta) {
@@ -194,8 +195,8 @@ export default function ReviewsPage() {
                                     }}
                                     variant={pageNum === page ? "default" : "outline"}
                                     className={`w-10 h-10 p-0 ${pageNum === page
-                                            ? "bg-gradient-to-r from-primary to-pink-600 text-white"
-                                            : ""
+                                        ? "bg-gradient-to-r from-primary to-pink-600 text-white"
+                                        : ""
                                         }`}
                                 >
                                     {pageNum}
