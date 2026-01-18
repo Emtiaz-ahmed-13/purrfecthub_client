@@ -376,7 +376,7 @@ function ReviewsManagement() {
     const fetchReviews = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://purrfecthub-server.render.com/api/v1'}/reviews`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://purrfecthub-server.render.com/api/v1'}/reviews/admin/all`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }

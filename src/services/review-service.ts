@@ -40,6 +40,7 @@ export interface CreateReviewPayload {
 
 export interface ReviewFilters {
     shelterId?: string;
+    catName?: string;
     rating?: number;
     isApproved?: boolean;
     isVisible?: boolean;

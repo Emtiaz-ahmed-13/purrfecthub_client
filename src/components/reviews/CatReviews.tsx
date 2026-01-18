@@ -18,15 +18,12 @@ export function CatReviews({ catId, catName }: CatReviewsProps) {
         const fetchReviews = async () => {
             try {
                 const response = await reviewService.getReviews({
+                    catName: catName,
                     isApproved: true,
                     isVisible: true,
                     limit: 10,
                 });
-                // Filter reviews for this specific cat
-                const catReviews = (response.data || []).filter(
-                    (review: Review) => review.catName === catName
-                );
-                setReviews(catReviews);
+                setReviews(response.data || []);
             } catch (error) {
                 console.error("Failed to fetch reviews:", error);
             } finally {
