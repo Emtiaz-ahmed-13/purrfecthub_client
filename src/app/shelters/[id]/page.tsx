@@ -22,6 +22,7 @@ interface ShelterDetails {
     phone?: string;
     email?: string;
     description?: string;
+    logo?: string;
     createdAt: string;
 }
 
@@ -111,8 +112,16 @@ export default function ShelterDetailsPage() {
                     <Card className="border-2 border-primary/20 shadow-xl overflow-hidden">
                         <div className="bg-gradient-to-r from-primary/10 via-pink-500/10 to-purple-600/10 p-8">
                             <div className="flex items-start gap-6">
-                                <div className="bg-primary/20 p-6 rounded-2xl">
-                                    <FaHome className="h-12 w-12 text-primary" />
+                                <div className="bg-primary/20 p-6 rounded-2xl overflow-hidden">
+                                    {shelter.logo ? (
+                                        <img
+                                            src={shelter.logo}
+                                            alt={`${shelter.name} logo`}
+                                            className="h-12 w-12 object-cover rounded-lg"
+                                        />
+                                    ) : (
+                                        <FaHome className="h-12 w-12 text-primary" />
+                                    )}
                                 </div>
                                 <div className="flex-1">
                                     <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-pink-600 bg-clip-text text-transparent">
